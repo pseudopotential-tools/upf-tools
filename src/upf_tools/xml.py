@@ -46,9 +46,7 @@ def xml_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
                 result["content"] = value
             else:
                 result = value
-            return result
-        else:
-            return result if result else None
+        return result
 
     # If the element has children, extract the contents of each child
     for child in element:

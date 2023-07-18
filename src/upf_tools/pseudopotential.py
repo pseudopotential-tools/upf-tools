@@ -15,11 +15,11 @@ class Pseudopotential(OrderedDict):
     """Class that contains all of the information of a UPF pseudopotential file."""
 
     def __init__(
-        self, filename: Union[Path, str], version: Union[str, Tuple[int]], *args, **kwargs
+        self, filename: Union[str, Path], version: Union[str, Tuple[int]], *args, **kwargs
     ):
         """Initialise a Pseudopotential object."""
         super().__init__(*args, **kwargs)
-        self.filename = filename
+        self.filename = filename  # type: ignore
         self.version = version
 
     def __repr__(self, *args, **kwargs) -> str:
@@ -38,7 +38,7 @@ class Pseudopotential(OrderedDict):
     def filename(self, value: Union[str, Path]) -> None:
         if isinstance(value, str):
             value = Path(value)
-        self._filename: Path = value
+        self._filename = value
 
     @property
     def version(self) -> Version:
