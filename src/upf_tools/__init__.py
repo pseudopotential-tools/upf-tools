@@ -1,0 +1,5 @@
+# -*- coding: utf-8 -*-
+
+"""Tools for handling .upf (Unified Pseudopotential Format) files."""
+
+from .api import *  # noqa
