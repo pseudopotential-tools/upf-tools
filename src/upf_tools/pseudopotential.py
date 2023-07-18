@@ -1,6 +1,4 @@
-"""
-Module containing the `Pseudopotential` class, the core class of upf-tools
-"""
+"""Module containing the `Pseudopotential` class, the core class of upf-tools."""
 
 from __future__ import annotations
 
@@ -14,25 +12,18 @@ from .xml import xmlfile_to_dict
 
 
 class Pseudopotential(OrderedDict):
-
-    """
-    Class that contains all of the information of a UPF pseudopotential file
-    """
+    """Class that contains all of the information of a UPF pseudopotential file."""
 
     def __init__(
         self, filename: Union[Path, str], version: Union[str, Tuple[int]], *args, **kwargs
     ):
-        """
-        Initialises a Pseudopotential object
-        """
+        """Initialise a Pseudopotential object."""
         super().__init__(*args, **kwargs)
         self.filename = filename
         self.version = version
 
     def __repr__(self, *args, **kwargs) -> str:
-        """
-        A minimal repr of a Pseudopotential
-        """
+        """Provide a minimal repr of a Pseudopotential."""
         return (
             f"Pseudopotential(filename={self.filename}, version={self.version}, "
             'keys=({", ".join([k for k in self.keys()])}))'
@@ -40,9 +31,7 @@ class Pseudopotential(OrderedDict):
 
     @property
     def filename(self) -> Path:
-        """
-        The filename of the pseudopotential (including the path), protected to always be a Path
-        """
+        """The filename of the pseudopotential (including the path), protected to always be a Path."""
         return self._filename
 
     @filename.setter
@@ -53,9 +42,7 @@ class Pseudopotential(OrderedDict):
 
     @property
     def version(self) -> Version:
-        """
-        The UPF version of the pseudopotential file, protected to always be a Version
-        """
+        """The UPF version of the pseudopotential file, protected to always be a Version."""
         return self._version
 
     @version.setter
@@ -66,9 +53,7 @@ class Pseudopotential(OrderedDict):
 
     @classmethod
     def from_upf(cls, filename: Union[Path, str]) -> Pseudopotential:
-        """
-        Creates a Pseudopotential object from a upf file
-        """
+        """Create a Pseudopotential object from a upf file."""
         # Sanitise input
         filename = filename if isinstance(filename, Path) else Path(filename)
 
@@ -78,14 +63,13 @@ class Pseudopotential(OrderedDict):
         return cls(filename, **dct)
 
     def to_dat(self):
-        """
-        Generates a .dat file (containing projectors that wannier90.x can read) from a Pseudopotential object
-        """
+        """Generate a .dat file (containing projectors that wannier90.x can read) from a Pseudopotential object."""
         raise NotImplementedError()
 
     def to_oncv_input(self) -> str:
-        """
-        Extracts the input file used to generate the pseudopotential (if it is present)
-        """
-        assert "inputfile" in self["info"]
+        """Extract the input file used to generate the pseudopotential (if it is present)."""
+        if "inputfile" not in self["info"]:
+            raise ValueError(
+                f"{self.__class__.__name__} does not appear to contain input file information"
+            )
         return self["info"]["inputfile"]

@@ -1,20 +1,16 @@
-"""
-Various helpful xml-related functions for upf-tools
-"""
+"""Various helpful xml-related functions for upf-tools."""
 
 import json
-import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Dict
+from xml.etree import ElementTree
 
 import numpy as np
+from defusedxml.ElementTree import parse as defused_parse
 
 
-def sanitise(value: str):
-    """
-    Simple wrapper of json.loads that tries to convert an arbitrary string to an int/float/bool if it appears to be
-    one of these objects
-    """
+def sanitise(value: str) -> Any:
+    """Convert an arbitrary string to an int/float/bool if it appears to be one of these."""
     try:
         value = json.loads(value)
     except json.decoder.JSONDecodeError:
@@ -22,13 +18,17 @@ def sanitise(value: str):
     return value
 
 
-def xml_to_dict(element: ET.Element) -> Dict[str, Any]:
+def xml_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
     """
-    Function that takes an xml string and converts it to a nested Dict
+    Convert an xml string to a nested Dict.
 
     This also contains some UPF-specific quirks, namely...
      - ignoring PP_ at the start of tags
      - storing tags with .1, .2 suffixes as lists e.g. CHI.1 and CHI.2 will be stored under "CHI" as a two-element list
+
+    :param element: an xml element
+
+    :return: a (possibly nested) dict
     """
     result = {k.lower(): sanitise(v) for k, v in element.attrib.items()}
 
@@ -65,8 +65,6 @@ def xml_to_dict(element: ET.Element) -> Dict[str, Any]:
 
 
 def xmlfile_to_dict(filename: Path):
-    """
-    Reads an xml file and converts its contents into a nested dictionary
-    """
-    root = ET.parse(filename).getroot()
+    """Read an xml file and converts its contents into a nested dictionary."""
+    root = defused_parse(filename).getroot()
     return xml_to_dict(root)
