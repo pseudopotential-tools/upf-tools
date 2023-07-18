@@ -9,23 +9,23 @@
 </h1>
 
 <p align="center">
-    <a href="https://github.com/elinscott/upf_tools/actions/workflows/tests.yml">
-        <img alt="Tests" src="https://github.com/elinscott/upf_tools/workflows/Tests/badge.svg" />
+    <a href="https://github.com/elinscott/upf-tools/actions/workflows/tests.yml">
+        <img alt="Tests" src="https://github.com/elinscott/upf-tools/workflows/Tests/badge.svg" />
     </a>
-    <a href="https://pypi.org/project/upf_tools">
-        <img alt="PyPI" src="https://img.shields.io/pypi/v/upf_tools" />
+    <a href="https://pypi.org/project/upf-tools">
+        <img alt="PyPI" src="https://img.shields.io/pypi/v/upf-tools" />
     </a>
-    <a href="https://pypi.org/project/upf_tools">
-        <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/upf_tools" />
+    <a href="https://pypi.org/project/upf-tools">
+        <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/upf-tools" />
     </a>
-    <a href="https://github.com/elinscott/upf_tools/blob/main/LICENSE">
-        <img alt="PyPI - License" src="https://img.shields.io/pypi/l/upf_tools" />
+    <a href="https://github.com/elinscott/upf-tools/blob/main/LICENSE">
+        <img alt="PyPI - License" src="https://img.shields.io/pypi/l/upf-tools" />
     </a>
-    <a href='https://upf_tools.readthedocs.io/en/latest/?badge=latest'>
-        <img src='https://readthedocs.org/projects/upf_tools/badge/?version=latest' alt='Documentation Status' />
+    <a href='https://upf-tools.readthedocs.io/en/latest/?badge=latest'>
+        <img src='https://readthedocs.org/projects/upf-tools/badge/?version=latest' alt='Documentation Status' />
     </a>
-    <a href="https://codecov.io/gh/elinscott/upf_tools/branch/main">
-        <img src="https://codecov.io/gh/elinscott/upf_tools/branch/main/graph/badge.svg" alt="Codecov status" />
+    <a href="https://codecov.io/gh/elinscott/upf-tools/branch/main">
+        <img src="https://codecov.io/gh/elinscott/upf-tools/branch/main/graph/badge.svg" alt="Codecov status" />
     </a>  
     <a href="https://github.com/cthoyt/cookiecutter-python-package">
         <img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-snekpack-blue" /> 
@@ -33,7 +33,7 @@
     <a href='https://github.com/psf/black'>
         <img src='https://img.shields.io/badge/code%20style-black-000000.svg' alt='Code style: black' />
     </a>
-    <a href="https://github.com/elinscott/upf_tools/blob/main/.github/CODE_OF_CONDUCT.md">
+    <a href="https://github.com/elinscott/upf-tools/blob/main/.github/CODE_OF_CONDUCT.md">
         <img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Contributor Covenant"/>
     </a>
 </p>
