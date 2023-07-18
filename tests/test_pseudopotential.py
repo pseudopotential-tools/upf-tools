@@ -10,6 +10,7 @@ from upf_tools import Pseudopotential
 
 datadir = Path(__file__).parent / 'data'
 
+
 @pytest.mark.parametrize("filename", [f for f in datadir.glob("*.upf")])
 def test_from_upf(filename):
     """
