@@ -1,9 +1,12 @@
+"""
+Module containing the `Pseudopotential` class, the core class of upf-tools
+"""
+
 from __future__ import annotations
 
-import xml.etree.ElementTree as ET
 from collections import OrderedDict
 from pathlib import Path
-from typing import Tuple, Union, Any
+from typing import Any, Tuple, Union
 
 from packaging.version import Version
 
@@ -19,15 +22,27 @@ class Pseudopotential(OrderedDict):
     def __init__(
         self, filename: Union[Path, str], version: Union[str, Tuple[int]], *args, **kwargs
     ):
+        """
+        Initialises a Pseudopotential object
+        """
         super().__init__(*args, **kwargs)
         self.filename = filename
         self.version = version
 
     def __repr__(self, *args, **kwargs) -> str:
-        return f'Pseudopotential(filename={self.filename}, version={self.version}, keys=({", ".join([k for k in self.keys()])}))'
+        """
+        A minimal repr of a Pseudopotential
+        """
+        return (
+            f"Pseudopotential(filename={self.filename}, version={self.version}, "
+            'keys=({", ".join([k for k in self.keys()])}))'
+        )
 
     @property
     def filename(self) -> Path:
+        """
+        The filename of the pseudopotential (including the path), protected to always be a Path
+        """
         return self._filename
 
     @filename.setter
@@ -38,6 +53,9 @@ class Pseudopotential(OrderedDict):
 
     @property
     def version(self) -> Version:
+        """
+        The UPF version of the pseudopotential file, protected to always be a Version
+        """
         return self._version
 
     @version.setter
@@ -48,6 +66,9 @@ class Pseudopotential(OrderedDict):
 
     @classmethod
     def from_upf(cls, filename: Union[Path, str]) -> Pseudopotential:
+        """
+        Creates a Pseudopotential object from a upf file
+        """
         # Sanitise input
         filename = filename if isinstance(filename, Path) else Path(filename)
 
@@ -57,8 +78,14 @@ class Pseudopotential(OrderedDict):
         return cls(filename, **dct)
 
     def to_dat(self):
-        pass
+        """
+        Generates a .dat file (containing projectors that wannier90.x can read) from a Pseudopotential object
+        """
+        raise NotImplementedError()
 
     def to_oncv_input(self) -> str:
+        """
+        Extracts the input file used to generate the pseudopotential (if it is present)
+        """
         assert "inputfile" in self["info"]
         return self["info"]["inputfile"]
