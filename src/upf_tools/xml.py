@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 from typing import Any, Dict
-from xml.etree import ElementTree
+from xml.etree import ElementTree  # noqa
 
 import numpy as np
 from defusedxml.ElementTree import parse as defused_parse
