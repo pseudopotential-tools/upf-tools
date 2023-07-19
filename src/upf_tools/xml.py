@@ -1,7 +1,6 @@
 """Various helpful xml-related functions for upf-tools."""
 
 import json
-from pathlib import Path
 from typing import Any, Dict
 from xml.etree import ElementTree  # noqa
 
@@ -66,5 +65,5 @@ def xmlfilecontents_to_dict(filecontents: str):
     """Convert a string (corresponding to the contents of an xml file) into a nested dictionary."""
     root = defused_fromstring(filecontents)
     dct = xml_to_dict(root)
-    dct.pop('version')
+    dct.pop("version")
     return dct

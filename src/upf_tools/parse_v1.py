@@ -1,8 +1,12 @@
+"""Functions for parsing UPF v1 files."""
+
 from typing import Any, Dict, List
+
 import numpy as np
 
 
-def manually_get_xml_block(tag, lines: List[str]) -> List[str]:
+def extract_block(tag, lines: List[str]) -> List[str]:
+    """Extract an block starting <tag> and ending </tag> from lines of text."""
     istart = next((i for i, line in enumerate(lines) if f"<{tag}" in line), None)
 
     if istart is None:
@@ -17,9 +21,10 @@ def manually_get_xml_block(tag, lines: List[str]) -> List[str]:
 
 
 def sanitise_pswfc(dct: Dict[str, Any]) -> Dict[str, Any]:
+    """Sanitise a PSWFC entry that has been read in with the default reader."""
     lines = dct["content"]
     dct = {"chi": []}
-    array = []
+    array: List[str] = []
     for line in lines:
         if "Wavefunction" in line:
             if array:
@@ -34,6 +39,7 @@ def sanitise_pswfc(dct: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def sanitise_beta(dct: Dict[str, Any]) -> Dict[str, Any]:
+    """Sanitise a BETA entry that has been read in with the default reader."""
     lines = dct["content"]
     index, l, beta, _ = lines[0].split()
     assert beta == "Beta"
@@ -51,8 +57,9 @@ def sanitise_beta(dct: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def sanitise_header(dct: Dict[str, Any]) -> Dict[str, Any]:
+    """Sanitise a HEADER entry that has been read in with the default reader."""
     lines = dct["content"]
-    splitlines = [l.split() for l in lines]
+    splitlines = [line.split() for line in lines]
     dct = {
         "element": splitlines[1][0],
         "is_ultrasoft": splitlines[2][0] == "US",
@@ -71,28 +78,31 @@ def sanitise_header(dct: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def sanitise_numeric_array(dct: Dict[str, Any]) -> Dict[str, Any]:
-    """Sanitise a dict that only contains a numeric array"""
+    """Sanitise a dict that only contains a numeric array."""
     array = np.array([v for row in dct["content"] for v in row.split()], dtype=float)
     return {"type": "real", "size": len(array), "content": array}
 
 
 def sanitise_dij(dct: Dict[str, Any]) -> Dict[str, Any]:
+    """Sanitise a DIJ entry that has been read in with the default reader."""
     lines = dct["content"]
-    length = max([int(l.split()[1]) for l in lines[1:]])
+    length = max([int(line.split()[1]) for line in lines[1:]])
     content = np.zeros((length, length))
     for row in lines[1:]:
         i, j, val = row.split()
         content[int(i) - 1, int(j) - 1] = float(val)
     dct = {"type": "real", "size": length**2, "content": content}
+    return dct
 
 
-def block_to_dict(lines):
-    dct = {}
+def block_to_dict(lines: List[str]) -> Dict[str, Any]:
+    """Convert a block of lines from a UPF v1 file into a nested dictionary."""
+    dct: Dict[str, Any] = {}
 
     # Parse the text
     inext = next((i for i, line in enumerate(lines) if line.strip().startswith("<")), None)
     textlines = lines if inext is None else lines[:inext]
-    text = [l for l in textlines if l.strip()]
+    text = [line for line in textlines if line.strip()]
     if len(text) > 0:
         dct["content"] = text
 
@@ -106,10 +116,11 @@ def block_to_dict(lines):
         if inext is None:
             # If there are no more tags, we are finished
             break
+        assert match is not None
         tag = match.strip()[1:-1].split()[0]
 
         # Extract and parse that block
-        block = manually_get_xml_block(tag, lines)
+        block = extract_block(tag, lines)
 
         # Remove everything up to the end of the new block
         del lines[: inext + len(block)]
@@ -144,5 +155,6 @@ def block_to_dict(lines):
 
 
 def upfv1contents_to_dict(string: str) -> Dict[str, Any]:
+    """Convert the contents of a UPF v1 file into a nested dictionary."""
     lines = string.split("\n")
     return block_to_dict(lines)
