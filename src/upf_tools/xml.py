@@ -6,7 +6,7 @@ from typing import Any, Dict
 from xml.etree import ElementTree  # noqa
 
 import numpy as np
-from defusedxml.ElementTree import parse as defused_parse
+from defusedxml.ElementTree import fromstring as defused_fromstring
 
 
 def sanitise(value: str) -> Any:
@@ -62,7 +62,9 @@ def xml_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
     return result
 
 
-def xmlfile_to_dict(filename: Path):
-    """Read an xml file and converts its contents into a nested dictionary."""
-    root = defused_parse(filename).getroot()
-    return xml_to_dict(root)
+def xmlfilecontents_to_dict(filecontents: str):
+    """Convert a string (corresponding to the contents of an xml file) into a nested dictionary."""
+    root = defused_fromstring(filecontents)
+    dct = xml_to_dict(root)
+    dct.pop('version')
+    return dct
