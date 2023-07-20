@@ -146,8 +146,3 @@ class Pseudopotential(OrderedDict):
                 f"{self.__class__.__name__} does not appear to contain input file information"
             )
         return self["info"]["inputfile"]
-
-    @property
-    def number_of_pswfc(self) -> int:
-        """Get the number of orbitals in the pseudopotential."""
-        raise NotImplementedError()

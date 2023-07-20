@@ -13,6 +13,10 @@ sssp = Path(__file__).parent / "sssp"
 def test_from_upf(filename):
     """Tests creating a `Pseudopotential` object via the classmethod `from_upf`."""
     psp = Pseudopotential.from_upf(filename)
+    assert "header" in psp
+    assert "z_valence" in psp["header"]
+    assert "number_of_proj" in psp["header"]
+    assert "number_of_wfc" in psp["header"]
     assert "mesh" in psp
     assert "r" in psp["mesh"]
     assert "local" in psp
