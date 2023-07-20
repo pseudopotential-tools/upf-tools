@@ -8,10 +8,11 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Optional, Tuple, Union
 
+import numpy as np
 from packaging.version import Version
 
-from .parse_v1 import upfv1contents_to_dict
-from .xml import xmlfilecontents_to_dict
+from .v1 import upfv1contents_to_dict
+from .v2 import upfv2contents_to_dict
 
 REGEX_UPF_VERSION = re.compile(
     r"""
@@ -60,8 +61,8 @@ class Pseudopotential(OrderedDict):
     def __repr__(self, *args, **kwargs) -> str:
         """Provide a minimal repr of a Pseudopotential."""
         return (
-            f"Pseudopotential(filename={self.filename}, version={self.version}, "
-            'keys=({", ".join([k for k in self.keys()])}))'
+            f'Pseudopotential(keys=({", ".join([k for k in self.keys()])}), '
+            f"filename={self.filename}, version={self.version}))"
         )
 
     @property
@@ -96,7 +97,7 @@ class Pseudopotential(OrderedDict):
 
         # Load the contents of the pseudopotential
         if version >= Version("2.0.0"):
-            dct = xmlfilecontents_to_dict(string)
+            dct = upfv2contents_to_dict(string)
         else:
             dct = upfv1contents_to_dict(string)
 
@@ -120,7 +121,23 @@ class Pseudopotential(OrderedDict):
 
     def to_dat(self):
         """Generate a .dat file (containing projectors that wannier90.x can read) from a Pseudopotential object."""
-        raise NotImplementedError()
+        # Fetch the r-mesh
+        rmesh = self["mesh"]["r"]
+
+        # Construct a logarithmic mesh
+        xmesh = [np.log(max(x, 1e-8)) for x in rmesh]
+
+        # Extract the pseudo wavefunctions, sorted by l and n
+        chis = sorted(self["pswfc"]["chi"], key=lambda chi: (chi["l"], chi["n"]))
+        data = np.transpose([chi["content"] for chi in chis])
+
+        dat = [f"{len(rmesh)} {len(chis)}", " ".join([str(chi["l"]) for chi in chis])]
+        dat += [
+            f"{x:20.15f} {r:20.15f} " + " ".join([f"{v:25.15e}" for v in row])
+            for x, r, row in zip(xmesh[1:], rmesh[1:], data[1:])
+        ]
+
+        return "\n".join(dat)
 
     def to_input(self) -> str:
         """Extract the input file used to generate the pseudopotential (if it is present)."""

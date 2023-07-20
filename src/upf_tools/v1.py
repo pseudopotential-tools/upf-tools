@@ -3,6 +3,7 @@
 from typing import Any, Dict, List
 
 import numpy as np
+from numpy.typing import NDArray
 
 
 def extract_block(tag, lines: List[str]) -> List[str]:
@@ -30,7 +31,9 @@ def sanitise_pswfc(dct: Dict[str, Any]) -> Dict[str, Any]:
             if array:
                 dct["chi"][-1]["content"] = np.array(array, dtype=float)
             label, l, occupation, _ = line.split()
-            dct["chi"].append({"label": label, "l": l, "occupation": float(occupation)})
+            dct["chi"].append(
+                {"label": label, "n": int(label[0]), "l": l, "occupation": float(occupation)}
+            )
             array = []
         else:
             array += line.split()
@@ -77,10 +80,10 @@ def sanitise_header(dct: Dict[str, Any]) -> Dict[str, Any]:
     return dct
 
 
-def sanitise_numeric_array(dct: Dict[str, Any]) -> Dict[str, Any]:
+def sanitise_numeric_array(dct: Dict[str, Any]) -> NDArray[np.float_]:
     """Sanitise a dict that only contains a numeric array."""
     array = np.array([v for row in dct["content"] for v in row.split()], dtype=float)
-    return {"type": "real", "size": len(array), "content": array}
+    return array
 
 
 def sanitise_dij(dct: Dict[str, Any]) -> Dict[str, Any]:
