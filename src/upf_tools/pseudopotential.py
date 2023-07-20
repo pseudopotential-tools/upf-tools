@@ -42,7 +42,17 @@ class Pseudopotential(OrderedDict):
         *args,
         **kwargs,
     ):
-        """Initialise a Pseudopotential object."""
+        """
+        Initialise a Pseudopotential object.
+
+        Note that it will usually be more convenient to create a `Pseudopotential object using
+        the class method `Pseudopotential.from_upf(...)`
+
+        :param version:  the UPF version number
+        :param filename: the name of the UPF file
+        :param *args:    args used to construct the dictionary of UPF entries ('header', 'mesh', 'local', ...)
+        :param **kwargs: kwargs used to construct the dictionary of UPF entries
+        """
         super().__init__(*args, **kwargs)
         self.filename = filename  # type: ignore
         self.version = version
@@ -112,7 +122,7 @@ class Pseudopotential(OrderedDict):
         """Generate a .dat file (containing projectors that wannier90.x can read) from a Pseudopotential object."""
         raise NotImplementedError()
 
-    def to_oncv_input(self) -> str:
+    def to_input(self) -> str:
         """Extract the input file used to generate the pseudopotential (if it is present)."""
         if "inputfile" not in self["info"]:
             raise ValueError(

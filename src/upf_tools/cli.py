@@ -17,6 +17,8 @@ import logging
 
 import click
 
+from upf_tools import Pseudopotential
+
 __all__ = [
     "main",
 ]
@@ -28,6 +30,31 @@ logger = logging.getLogger(__name__)
 @click.version_option()
 def main():
     """CLI for upf_tools."""
+
+
+@main.command()
+@click.argument("filename")
+def to_input(filename):
+    """
+    Extract an input file from a pseudopotential.
+
+    :param filename: the name of the .upf file
+    """
+    psp = Pseudopotential.from_upf(filename)
+    inp = psp.to_input()
+    click.echo(inp)
+
+
+@main.command()
+@click.argument("filename")
+def to_dat(filename):
+    """Extract a dat file from a pseudopotential.
+
+    :param filename: the name of the .upf file
+    """
+    psp = Pseudopotential.from_upf(filename)
+    dat = psp.to_dat()
+    click.echo(dat)
 
 
 if __name__ == "__main__":
