@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from pathlib import Path
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 from packaging.version import Version
@@ -36,7 +36,8 @@ class UPFDict(OrderedDict):
         :param version:  the UPF version number
         :type version:   str, Version
         :param filename: the name of the UPF file
-        :param args:     arguments used to construct the dictionary of UPF entries (``header``, ``mesh``, ``local``, ...)
+        :param args:     arguments used to construct the dictionary of UPF entries
+                         (``header``, ``mesh``, ``local``, ...)
         :param kwargs:   keyword arguments used to construct the dictionary of UPF entries
         """
 
@@ -106,7 +107,8 @@ class UPFDict(OrderedDict):
         return psp
 
     def to_dat(self) -> str:
-        """Generate a ``.dat`` file (containing projectors that ``wannier90.x`` can read) from a :class:`UPFDict` object."""
+        """Generate a ``.dat`` file (containing projectors that ``wannier90.x`` can read) from a :class:`UPFDict`
+        object."""
         # Fetch the r-mesh
         rmesh = self["mesh"]["r"]
 
