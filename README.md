@@ -65,14 +65,12 @@ $ upf_tools to-input /path/to/pseudo.upf > pseudo.in
 
 ## 🚀 Installation
 
-<!-- Uncomment this section after your first ``tox -e finish``
 The most recent release can be installed from
 [PyPI](https://pypi.org/project/upf_tools/) with:
 
 ```shell
 $ pip install upf_tools
 ```
--->
 
 The most recent code and data can be installed directly from GitHub with:
 

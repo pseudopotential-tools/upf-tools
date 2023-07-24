@@ -1,73 +1,60 @@
-"""Module containing the `Pseudopotential` class, the core class of upf-tools."""
+"""Module containing the :class:`UPFDict` class, the heart of ``upf-tools``."""
 
 from __future__ import annotations
 
-import re
-import warnings
 from collections import OrderedDict
 from pathlib import Path
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 from packaging.version import Version
 
+from .utils import get_version_number
 from .v1 import upfv1contents_to_dict
 from .v2 import upfv2contents_to_dict
 
-REGEX_UPF_VERSION = re.compile(
-    r"""
-    \s*<UPF\s+version\s*="
-    (?P<version>.*)">
-    """,
-    re.VERBOSE,
-)
 
+class UPFDict(OrderedDict):
+    """Class that contains all of the information of a UPF pseudopotential file.
 
-def get_version_number(string: str) -> Version:
-    """Extract the version number from the contents of a UPF file."""
-    match = REGEX_UPF_VERSION.search(string)
-    if match:
-        return Version(match.group("version"))
-    else:
-        warnings.warn(f"Could not determine the UPF version. Assuming v1.0.0")  # noqa
-        return Version("1.0.0")
+    Note that it will usually be more convenient to create a :class:`UPFDict` object using
+    the class method ``UPFDict.from_upf(...)`` i.e. ::
 
+        from upf_tools import UPFDict
+        psp = UPFDict.from_upf(/path/to/file.upf)
 
-class Pseudopotential(OrderedDict):
-    """Class that contains all of the information of a UPF pseudopotential file."""
+    instead of direct instantiation.
+
+    :param version:  the UPF version number
+    :type version:   str, Version
+    :param filename: the name of the UPF file
+    :param args:     arguments used to construct the dictionary of UPF entries
+                     (``header``, ``mesh``, ``local``, ...)
+    :param kwargs:   keyword arguments used to construct the dictionary of UPF entries
+
+    """
 
     def __init__(
         self,
-        version: Union[str, Tuple[int]],
+        version: Union[str, Version],
         filename: Optional[Union[str, Path]] = None,
         *args,
         **kwargs,
     ):
-        """
-        Initialise a Pseudopotential object.
-
-        Note that it will usually be more convenient to create a `Pseudopotential object using
-        the class method `Pseudopotential.from_upf(...)`
-
-        :param version:  the UPF version number
-        :param filename: the name of the UPF file
-        :param *args:    args used to construct the dictionary of UPF entries ('header', 'mesh', 'local', ...)
-        :param **kwargs: kwargs used to construct the dictionary of UPF entries
-        """
         super().__init__(*args, **kwargs)
         self.filename = filename  # type: ignore
         self.version = version
 
     def __repr__(self, *args, **kwargs) -> str:
-        """Provide a minimal repr of a Pseudopotential."""
+        """Provide a minimal representation of a UPFDict."""
         return (
-            f'Pseudopotential(keys=({", ".join([k for k in self.keys()])}), '
+            f'UPFDict(keys=({", ".join([k for k in self.keys()])}), '
             f"filename={self.filename}, version={self.version}))"
         )
 
     @property
     def filename(self) -> Path:
-        """The filename of the pseudopotential (including the path), protected to always be a Path."""
+        """The filename of the pseudopotential (including the path), protected to always be a :class:`Path`."""
         if self._filename is None:
             raise AttributeError(f"{self.__class__.__name__} has not been set")
         return self._filename
@@ -80,7 +67,7 @@ class Pseudopotential(OrderedDict):
 
     @property
     def version(self) -> Version:
-        """The UPF version of the pseudopotential file, protected to always be a Version."""
+        """The UPF version of the pseudopotential file, protected to always be a :class:`Version`."""
         return self._version
 
     @version.setter
@@ -90,8 +77,8 @@ class Pseudopotential(OrderedDict):
         self._version = value
 
     @classmethod
-    def from_str(cls, string: str) -> Pseudopotential:
-        """Create a Pseudopotential object from a string (typically the contents of a upf file)."""
+    def from_str(cls, string: str) -> UPFDict:
+        """Create a :class:`UPFDict` object from a string (typically the contents of a ``.upf`` file)."""
         # Fetch the version number
         version = get_version_number(string)
 
@@ -104,8 +91,8 @@ class Pseudopotential(OrderedDict):
         return cls(version, **dct)
 
     @classmethod
-    def from_upf(cls, filename: Union[Path, str]) -> Pseudopotential:
-        """Create a Pseudopotential object from a upf file."""
+    def from_upf(cls, filename: Union[Path, str]) -> UPFDict:
+        """Create a :class:`UPFDict` object from a ``.upf`` file."""
         # Sanitise input
         filename = filename if isinstance(filename, Path) else Path(filename)
 
@@ -119,8 +106,16 @@ class Pseudopotential(OrderedDict):
 
         return psp
 
-    def to_dat(self):
-        """Generate a .dat file (containing projectors that wannier90.x can read) from a Pseudopotential object."""
+    def to_dat(self) -> str:
+        """Generate a ``.dat`` file from a :class:`UPFDict` object.
+
+        These files contain projectors that ``wannier90.x`` can read.
+
+        :raises ValueError: The pseudopotential does not contain the pseudo-wavefunctions necessary to generate
+            a ``.dat`` file
+
+        :returns: the contents of a ``.dat`` file
+        """
         # Fetch the r-mesh
         rmesh = self["mesh"]["r"]
 
@@ -128,6 +123,8 @@ class Pseudopotential(OrderedDict):
         xmesh = [np.log(max(x, 1e-8)) for x in rmesh]
 
         # Extract the pseudo wavefunctions, sorted by l and n
+        if "chi" not in self["pswfc"]:
+            raise ValueError("This pseudopotential does not contain any pseudo-wavefunctions")
         chis = sorted(self["pswfc"]["chi"], key=lambda chi: (chi["l"], chi["n"]))
         data = np.transpose([chi["content"] for chi in chis])
 
