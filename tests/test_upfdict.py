@@ -11,7 +11,7 @@ sssp = Path(__file__).parent / "sssp"
 
 @pytest.mark.parametrize("filename", [f for ext in ["upf", "UPF"] for f in sssp.glob(f"*.{ext}")])
 def test_from_upf(filename):
-    """Test creating a `UPFDict` object via the classmethod `from_upf`."""
+    """Test creating a :class:`UPFDict` object via the classmethod ``from_upf``."""
     psp = UPFDict.from_upf(filename)
     assert "header" in psp
     assert "z_valence" in psp["header"]
@@ -26,6 +26,6 @@ def test_from_upf(filename):
 
 @pytest.mark.parametrize("filename", [f for ext in ["upf", "UPF"] for f in sssp.glob(f"*.{ext}")])
 def test_to_dat(filename):
-    """Test generating a `.dat` file via `from_upf`"""
+    """Test generating a ``.dat`` file via ``from_upf``."""
     psp = UPFDict.from_upf(filename)
     psp.to_dat()

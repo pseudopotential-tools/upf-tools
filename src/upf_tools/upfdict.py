@@ -23,6 +23,15 @@ class UPFDict(OrderedDict):
         from upf_tools import UPFDict
         psp = UPFDict.from_upf(/path/to/file.upf)
 
+    instead of direct instantiation.
+
+    :param version:  the UPF version number
+    :type version:   str, Version
+    :param filename: the name of the UPF file
+    :param args:     arguments used to construct the dictionary of UPF entries
+                     (``header``, ``mesh``, ``local``, ...)
+    :param kwargs:   keyword arguments used to construct the dictionary of UPF entries
+
     """
 
     def __init__(
@@ -32,15 +41,6 @@ class UPFDict(OrderedDict):
         *args,
         **kwargs,
     ):
-        """
-        :param version:  the UPF version number
-        :type version:   str, Version
-        :param filename: the name of the UPF file
-        :param args:     arguments used to construct the dictionary of UPF entries
-                         (``header``, ``mesh``, ``local``, ...)
-        :param kwargs:   keyword arguments used to construct the dictionary of UPF entries
-        """
-
         super().__init__(*args, **kwargs)
         self.filename = filename  # type: ignore
         self.version = version
@@ -107,8 +107,15 @@ class UPFDict(OrderedDict):
         return psp
 
     def to_dat(self) -> str:
-        """Generate a ``.dat`` file (containing projectors that ``wannier90.x`` can read) from a :class:`UPFDict`
-        object."""
+        """Generate a ``.dat`` file from a :class:`UPFDict` object.
+
+        These files contain projectors that ``wannier90.x`` can read.
+
+        :raises ValueError: The pseudopotential does not contain the pseudo-wavefunctions necessary to generate
+            a ``.dat`` file
+
+        :returns: the contents of a ``.dat`` file
+        """
         # Fetch the r-mesh
         rmesh = self["mesh"]["r"]
 
