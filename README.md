@@ -43,11 +43,11 @@ Tools for handling `.upf` (Unified Pseudopotential Format) files
 ## 💪 Getting Started
 
 ```python
-from upf_tools import Pseudopotential
-psp = Pseudopotential.from_upf('/path/to/file.upf')
+from upf_tools import UPFDict
+psp = UPFDict.from_upf('/path/to/file.upf')
 ```
 
-`Pseudopotential` is a lightweight class that behaves like a dictionary with a few added functionalities.
+`UPFDict` is a lightweight class that behaves like a dictionary with a few added functionalities.
 
 ### Command Line Interface
 
