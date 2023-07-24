@@ -1,4 +1,4 @@
 Usage
 =====
-.. automodule:: upf_tools.api
+.. automodule:: upf_tools.pseudopotential
     :members:

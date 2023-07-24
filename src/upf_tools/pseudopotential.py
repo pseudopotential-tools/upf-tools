@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import re
-import warnings
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Optional, Tuple, Union
@@ -11,26 +9,9 @@ from typing import Any, Optional, Tuple, Union
 import numpy as np
 from packaging.version import Version
 
+from .utils import get_version_number
 from .v1 import upfv1contents_to_dict
 from .v2 import upfv2contents_to_dict
-
-REGEX_UPF_VERSION = re.compile(
-    r"""
-    \s*<UPF\s+version\s*="
-    (?P<version>.*)">
-    """,
-    re.VERBOSE,
-)
-
-
-def get_version_number(string: str) -> Version:
-    """Extract the version number from the contents of a UPF file."""
-    match = REGEX_UPF_VERSION.search(string)
-    if match:
-        return Version(match.group("version"))
-    else:
-        warnings.warn(f"Could not determine the UPF version. Assuming v1.0.0")  # noqa
-        return Version("1.0.0")
 
 
 class Pseudopotential(OrderedDict):
@@ -38,21 +19,27 @@ class Pseudopotential(OrderedDict):
 
     def __init__(
         self,
-        version: Union[str, Tuple[int]],
+        version: Union[str, Version],
         filename: Optional[Union[str, Path]] = None,
         *args,
         **kwargs,
     ):
         """
-        Initialise a Pseudopotential object.
+        Initialise a :class:`Pseudopotential` object.
 
-        Note that it will usually be more convenient to create a `Pseudopotential object using
-        the class method `Pseudopotential.from_upf(...)`
+        Note that it will usually be more convenient to create a :class:`Pseudopotential` object using
+        the class method `Pseudopotential.from_upf(...)` i.e.
+
+        ``` python
+        from upf_tools import Pseudopotential
+        psp = Pseudopotential.from_upf(/path/to/file.upf)
+        ```
 
         :param version:  the UPF version number
+        :type version:   str, Version
         :param filename: the name of the UPF file
-        :param *args:    args used to construct the dictionary of UPF entries ('header', 'mesh', 'local', ...)
-        :param **kwargs: kwargs used to construct the dictionary of UPF entries
+        :param args:    args used to construct the dictionary of UPF entries ('header', 'mesh', 'local', ...)
+        :param kwargs: kwargs used to construct the dictionary of UPF entries
         """
         super().__init__(*args, **kwargs)
         self.filename = filename  # type: ignore
@@ -67,7 +54,7 @@ class Pseudopotential(OrderedDict):
 
     @property
     def filename(self) -> Path:
-        """The filename of the pseudopotential (including the path), protected to always be a Path."""
+        """The filename of the pseudopotential (including the path), protected to always be a :class:`Path`."""
         if self._filename is None:
             raise AttributeError(f"{self.__class__.__name__} has not been set")
         return self._filename
@@ -80,7 +67,7 @@ class Pseudopotential(OrderedDict):
 
     @property
     def version(self) -> Version:
-        """The UPF version of the pseudopotential file, protected to always be a Version."""
+        """The UPF version of the pseudopotential file, protected to always be a :class:`Version`."""
         return self._version
 
     @version.setter
@@ -91,7 +78,7 @@ class Pseudopotential(OrderedDict):
 
     @classmethod
     def from_str(cls, string: str) -> Pseudopotential:
-        """Create a Pseudopotential object from a string (typically the contents of a upf file)."""
+        """Create a :class:`Pseudopotential` object from a string (typically the contents of a upf file)."""
         # Fetch the version number
         version = get_version_number(string)
 
@@ -105,7 +92,7 @@ class Pseudopotential(OrderedDict):
 
     @classmethod
     def from_upf(cls, filename: Union[Path, str]) -> Pseudopotential:
-        """Create a Pseudopotential object from a upf file."""
+        """Create a :class:`Pseudopotential` object from a `.upf` file."""
         # Sanitise input
         filename = filename if isinstance(filename, Path) else Path(filename)
 
@@ -119,7 +106,7 @@ class Pseudopotential(OrderedDict):
 
         return psp
 
-    def to_dat(self):
+    def to_dat(self) -> str:
         """Generate a .dat file (containing projectors that wannier90.x can read) from a Pseudopotential object."""
         # Fetch the r-mesh
         rmesh = self["mesh"]["r"]
@@ -128,6 +115,8 @@ class Pseudopotential(OrderedDict):
         xmesh = [np.log(max(x, 1e-8)) for x in rmesh]
 
         # Extract the pseudo wavefunctions, sorted by l and n
+        if "chi" not in self["pswfc"]:
+            raise ValueError("This pseudopotential does not contain any pseudo-wavefunctions")
         chis = sorted(self["pswfc"]["chi"], key=lambda chi: (chi["l"], chi["n"]))
         data = np.transpose([chi["content"] for chi in chis])
 

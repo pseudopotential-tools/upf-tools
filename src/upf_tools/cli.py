@@ -39,6 +39,7 @@ def to_input(filename):
     Extract an input file from a pseudopotential.
 
     :param filename: the name of the .upf file
+    :type filename: str
     """
     psp = Pseudopotential.from_upf(filename)
     inp = psp.to_input()
@@ -51,6 +52,7 @@ def to_dat(filename):
     """Extract a dat file from a pseudopotential.
 
     :param filename: the name of the .upf file
+    :type filename: str
     """
     psp = Pseudopotential.from_upf(filename)
     dat = psp.to_dat()
