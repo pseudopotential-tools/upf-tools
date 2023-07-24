@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""Tools for handling .upf (Unified Pseudopotential Format) files."""
+"""Tools for handling .upf (Unified UPFDict Format) files."""
 
-from .api import *  # noqa
-from .pseudopotential import Pseudopotential  # noqa: F401
+from .upfdict import UPFDict  # noqa: F401

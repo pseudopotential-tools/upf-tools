@@ -1,4 +1,4 @@
-"""Module containing the `Pseudopotential` class, the core class of upf-tools."""
+"""Module containing the :class:`UPFDict` class, the heart of ``upf-tools``."""
 
 from __future__ import annotations
 
@@ -14,8 +14,16 @@ from .v1 import upfv1contents_to_dict
 from .v2 import upfv2contents_to_dict
 
 
-class Pseudopotential(OrderedDict):
-    """Class that contains all of the information of a UPF pseudopotential file."""
+class UPFDict(OrderedDict):
+    """Class that contains all of the information of a UPF pseudopotential file.
+
+    Note that it will usually be more convenient to create a :class:`UPFDict` object using
+    the class method ``UPFDict.from_upf(...)`` i.e. ::
+
+        from upf_tools import UPFDict
+        psp = UPFDict.from_upf(/path/to/file.upf)
+
+    """
 
     def __init__(
         self,
@@ -25,30 +33,21 @@ class Pseudopotential(OrderedDict):
         **kwargs,
     ):
         """
-        Initialise a :class:`Pseudopotential` object.
-
-        Note that it will usually be more convenient to create a :class:`Pseudopotential` object using
-        the class method `Pseudopotential.from_upf(...)` i.e.
-
-        ``` python
-        from upf_tools import Pseudopotential
-        psp = Pseudopotential.from_upf(/path/to/file.upf)
-        ```
-
         :param version:  the UPF version number
         :type version:   str, Version
         :param filename: the name of the UPF file
-        :param args:    args used to construct the dictionary of UPF entries ('header', 'mesh', 'local', ...)
-        :param kwargs: kwargs used to construct the dictionary of UPF entries
+        :param args:     arguments used to construct the dictionary of UPF entries (``header``, ``mesh``, ``local``, ...)
+        :param kwargs:   keyword arguments used to construct the dictionary of UPF entries
         """
+
         super().__init__(*args, **kwargs)
         self.filename = filename  # type: ignore
         self.version = version
 
     def __repr__(self, *args, **kwargs) -> str:
-        """Provide a minimal repr of a Pseudopotential."""
+        """Provide a minimal representation of a UPFDict."""
         return (
-            f'Pseudopotential(keys=({", ".join([k for k in self.keys()])}), '
+            f'UPFDict(keys=({", ".join([k for k in self.keys()])}), '
             f"filename={self.filename}, version={self.version}))"
         )
 
@@ -77,8 +76,8 @@ class Pseudopotential(OrderedDict):
         self._version = value
 
     @classmethod
-    def from_str(cls, string: str) -> Pseudopotential:
-        """Create a :class:`Pseudopotential` object from a string (typically the contents of a upf file)."""
+    def from_str(cls, string: str) -> UPFDict:
+        """Create a :class:`UPFDict` object from a string (typically the contents of a ``.upf`` file)."""
         # Fetch the version number
         version = get_version_number(string)
 
@@ -91,8 +90,8 @@ class Pseudopotential(OrderedDict):
         return cls(version, **dct)
 
     @classmethod
-    def from_upf(cls, filename: Union[Path, str]) -> Pseudopotential:
-        """Create a :class:`Pseudopotential` object from a `.upf` file."""
+    def from_upf(cls, filename: Union[Path, str]) -> UPFDict:
+        """Create a :class:`UPFDict` object from a ``.upf`` file."""
         # Sanitise input
         filename = filename if isinstance(filename, Path) else Path(filename)
 
@@ -107,7 +106,7 @@ class Pseudopotential(OrderedDict):
         return psp
 
     def to_dat(self) -> str:
-        """Generate a .dat file (containing projectors that wannier90.x can read) from a Pseudopotential object."""
+        """Generate a ``.dat`` file (containing projectors that ``wannier90.x`` can read) from a :class:`UPFDict` object."""
         # Fetch the r-mesh
         rmesh = self["mesh"]["r"]
 
