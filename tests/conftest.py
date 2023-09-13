@@ -1,4 +1,4 @@
-"""Fixtures for use in the test suite"""
+"""Fixtures for use in the test suite."""
 
 import builtins
 import io
@@ -8,7 +8,7 @@ import pytest
 
 
 def patch_open(open_func, files):
-    """Function that keeps track of the files that have been created."""
+    """Wrap the function open_func to keep track of any files that have been created."""
 
     def open_patched(
         path,
@@ -20,6 +20,7 @@ def patch_open(open_func, files):
         closefd=True,
         opener=None,
     ):
+        """Call open_func while keeping track of the files that have been created."""
         if "w" in mode and not os.path.isfile(path):
             files.append(path)
         return open_func(
@@ -38,7 +39,7 @@ def patch_open(open_func, files):
 
 @pytest.fixture(autouse=True)
 def cleanup_files(monkeypatch):
-    """Fixture that deletes any files that have been created by the tests."""
+    """Delete any files that have been created once a test is complete."""
     files = []
     monkeypatch.setattr(builtins, "open", patch_open(builtins.open, files))
     monkeypatch.setattr(io, "open", patch_open(io.open, files))

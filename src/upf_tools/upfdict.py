@@ -9,10 +9,10 @@ from typing import Any, Optional, Union
 import numpy as np
 from packaging.version import Version
 
+from .oncv import ONCVInput
 from .utils import get_version_number
 from .v1 import upfv1contents_to_dict
 from .v2 import upfv2contents_to_dict
-from .oncv import ONCVInput
 
 
 class UPFDict(OrderedDict):

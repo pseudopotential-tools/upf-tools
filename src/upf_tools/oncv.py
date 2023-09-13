@@ -1,35 +1,65 @@
 """Classes for handling ONCV input files."""
 
+from collections import UserList
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Generic, Optional, TypeVar
 
 from upf_tools.utils import sanitise
 
 
-class ONCVBlock:
-    """Generic class for an object in an ONCV input file."""
+class ONCVEntry:
+    """Generic class for an entry in an ONCV input file."""
 
     @property
     def columns(self):
-        """Return the column headers for the block."""
+        """Return the column headers for the entry."""
         return "# " + " ".join([f"{str(k): >8}" for k in self.__dict__.keys()])[2:]
 
     @property
     def content(self):
-        """Return the content of the block."""
+        """Return the content of the entry."""
         return " ".join([f"{str(v): >8}" for v in self.__dict__.values() if v is not None])
 
     def to_str(self):
-        """Return the text representation of the block."""
+        """Return the text representation of the entry."""
         return f"{self.columns}\n{self.content}"
 
     def __repr__(self):
-        """Make the repr of the block very simple."""
+        """Make the repr of the entry very simple."""
         return str(self.__dict__)
 
 
+T = TypeVar("T")
+
+
+class ONCVList(UserList, Generic[T]):
+    """Generic class for an entry in an ONCV input file that contains multiple elements and emulates a list."""
+
+    def __init__(self, data, print_length=False):
+        self.print_length = print_length
+        super().__init__(data)
+
+    @property
+    def columns(self):
+        """Return the column headers for the list."""
+        return self.data[0].columns
+
+    @property
+    def content(self):
+        """Return the content of the list."""
+        out = ""
+        if self.print_length:
+            out = f"{len(self): >8}\n"
+        out += "\n".join([d.content for d in self.data])
+        return out
+
+    def to_str(self):
+        """Return the text representation of the list."""
+        return f"{self.columns}\n{self.content}"
+
+
 @dataclass(repr=False)
-class ONCVAtom(ONCVBlock):
+class ONCVAtom(ONCVEntry):
     """Class for the atom block in an ONCV input file."""
 
     atsym: str
@@ -41,7 +71,7 @@ class ONCVAtom(ONCVBlock):
 
 
 @dataclass(repr=False)
-class ONCVConfigurationSubshell(ONCVBlock):
+class ONCVConfigurationSubshell(ONCVEntry):
     """Class for a subshell in an ONCV configuration block."""
 
     n: int
@@ -50,54 +80,7 @@ class ONCVConfigurationSubshell(ONCVBlock):
 
 
 @dataclass(repr=False)
-class ONCVConfiguration(ONCVBlock):
-    """Class for a configuration in an ONCV input file."""
-
-    subshells: List[ONCVConfigurationSubshell]
-    print_length: bool = True
-
-    def __len__(self):
-        """Return the number of subshells in the configuration."""
-        return len(self.subshells)
-
-    @property
-    def columns(self):
-        """Return the column headers for the block."""
-        return self.subshells[0].columns
-
-    @property
-    def content(self):
-        """Return the content of the block."""
-        out = ""
-        if self.print_length:
-            out = f"{len(self): >8}\n"
-        out += "\n".join([subshell.content for subshell in self.subshells])
-        return out
-
-
-@dataclass(repr=False)
-class ONCVConfigurations(ONCVBlock):
-    """Class for a list of configurations in an ONCV input file."""
-
-    configurations: List[ONCVConfiguration]
-
-    def __len__(self):
-        """Return the number of configurations in the block."""
-        return len(self.configurations)
-
-    @property
-    def columns(self):
-        """Return the column headers for the block."""
-        return self.configurations[0].columns
-
-    @property
-    def content(self):
-        """Return the content of the block."""
-        return "\n".join([configuration.content for configuration in self.configurations])
-
-
-@dataclass(repr=False)
-class ONCVOptimizationChannel(ONCVBlock):
+class ONCVOptimizationChannel(ONCVEntry):
     """Class for an optimization channel in an ONCV input file."""
 
     l: int
@@ -109,24 +92,7 @@ class ONCVOptimizationChannel(ONCVBlock):
 
 
 @dataclass(repr=False)
-class ONCVOptimization(ONCVBlock):
-    """Class for the optimization block in an ONCV input file."""
-
-    channels: List[ONCVOptimizationChannel]
-
-    @property
-    def columns(self):
-        """Return the column headers for the block."""
-        return self.channels[0].columns
-
-    @property
-    def content(self):
-        """Return the content of the block."""
-        return "\n".join([channel.content for channel in self.channels])
-
-
-@dataclass(repr=False)
-class ONCVLocalPotential(ONCVBlock):
+class ONCVLocalPotential(ONCVEntry):
     """Class for the local potential block in an ONCV input file."""
 
     lloc: int
@@ -136,7 +102,7 @@ class ONCVLocalPotential(ONCVBlock):
 
 
 @dataclass(repr=False)
-class ONCVVKBProjector(ONCVBlock):
+class ONCVVKBProjector(ONCVEntry):
     """Class for a VKB projector in an ONCV input file."""
 
     l: int
@@ -145,24 +111,7 @@ class ONCVVKBProjector(ONCVBlock):
 
 
 @dataclass(repr=False)
-class ONCVVKBProjectors(ONCVBlock):
-    """Class for the VKB projectors block in an ONCV input file."""
-
-    projectors: List[ONCVVKBProjector]
-
-    @property
-    def columns(self):
-        """Return the column headers for the block."""
-        return self.projectors[0].columns
-
-    @property
-    def content(self):
-        """Return the content of the block."""
-        return "\n".join([projector.content for projector in self.projectors])
-
-
-@dataclass(repr=False)
-class ONCVModelCoreCharge(ONCVBlock):
+class ONCVModelCoreCharge(ONCVEntry):
     """Class for the model core charge block in an ONCV input file."""
 
     icmod: int
@@ -171,7 +120,7 @@ class ONCVModelCoreCharge(ONCVBlock):
 
 
 @dataclass(repr=False)
-class ONCVLogDerivativeAnalysis(ONCVBlock):
+class ONCVLogDerivativeAnalysis(ONCVEntry):
     """Class for the log derivative analysis block in an ONCV input file."""
 
     epsh1: float
@@ -180,7 +129,7 @@ class ONCVLogDerivativeAnalysis(ONCVBlock):
 
 
 @dataclass(repr=False)
-class ONCVOutputGrid(ONCVBlock):
+class ONCVOutputGrid(ONCVEntry):
     """Class for the output grid block in an ONCV input file."""
 
     rlmax: float
@@ -192,15 +141,15 @@ class ONCVInput:
     """Class for the contents of an ONCV input file."""
 
     atom: ONCVAtom
-    reference_configuration: ONCVConfiguration
+    reference_configuration: ONCVList[ONCVConfigurationSubshell]
     lmax: int
-    optimization: ONCVOptimization
+    optimization: ONCVList[ONCVOptimizationChannel]
     local_potential: ONCVLocalPotential
-    vkb_projectors: ONCVVKBProjectors
+    vkb_projectors: ONCVList[ONCVVKBProjector]
     model_core_charge: ONCVModelCoreCharge
     log_derivative_analysis: ONCVLogDerivativeAnalysis
     output_grid: ONCVOutputGrid
-    test_configurations: ONCVConfigurations
+    test_configurations: ONCVList[ONCVList[ONCVConfigurationSubshell]]
 
     @classmethod
     def from_file(cls, filename: str):
@@ -221,12 +170,11 @@ class ONCVInput:
 
         # reference configuration
         ntot = atom.nc + atom.nv
-        reference_configuraton = ONCVConfiguration(
+        reference_configuration: ONCVList[ONCVConfigurationSubshell] = ONCVList(
             [
                 ONCVConfigurationSubshell(*[sanitise(v) for v in line.split()])
                 for line in content[1 : ntot + 1]
-            ],
-            print_length=False,
+            ]
         )
 
         # lmax
@@ -235,7 +183,7 @@ class ONCVInput:
         # optimization
         istart = ntot + 2
         iend = istart + lmax + 1
-        optimization = ONCVOptimization(
+        optimization: ONCVList[ONCVOptimizationChannel] = ONCVList(
             [
                 ONCVOptimizationChannel(*[sanitise(v) for v in line.split()])
                 for line in content[istart:iend]
@@ -248,7 +196,7 @@ class ONCVInput:
         # VKB projectors
         istart = iend + 1
         iend = istart + lmax + 1
-        vkb = ONCVVKBProjectors(
+        vkb: ONCVList[ONCVVKBProjector] = ONCVList(
             [
                 ONCVVKBProjector(*[sanitise(v) for v in line.split()])
                 for line in content[istart:iend]
@@ -272,22 +220,23 @@ class ONCVInput:
         # test configurations
         ncvf = int(content[iend])
         iend += 1
-        test_configs = []
+        test_configs: ONCVList[ONCVList[ONCVConfigurationSubshell]] = ONCVList([])
         for _ in range(ncvf):
             istart = iend + 1
             iend = istart + atom.nv
             test_configs.append(
-                ONCVConfiguration(
+                ONCVList(
                     [
                         ONCVConfigurationSubshell(*[sanitise(v) for v in line.split()])
                         for line in content[istart:iend]
-                    ]
+                    ],
+                    print_length=True,
                 )
             )
 
         return cls(
             atom,
-            reference_configuraton,
+            reference_configuration,
             lmax,
             optimization,
             local_potential,
@@ -295,7 +244,7 @@ class ONCVInput:
             mcc,
             log_derivative_analysis,
             output_grid,
-            ONCVConfigurations(test_configs),
+            test_configs,
         )
 
     def to_str(self):
