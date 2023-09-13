@@ -1,7 +1,9 @@
 """Miscellaneous utilities for upf-tools."""
 
 import re
+import json
 import warnings
+from typing import Any
 
 from packaging.version import Version
 
@@ -22,3 +24,12 @@ def get_version_number(string: str) -> Version:
     else:
         warnings.warn(f"Could not determine the UPF version. Assuming v1.0.0")  # noqa
         return Version("1.0.0")
+
+
+def sanitise(value: str) -> Any:
+    """Convert an arbitrary string to an int/float/bool if it appears to be one of these."""
+    try:
+        value = json.loads(value)
+    except json.decoder.JSONDecodeError:
+        pass
+    return value

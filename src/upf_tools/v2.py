@@ -1,20 +1,12 @@
 """Various helpful xml-related functions for upf-tools."""
 
-import json
 from typing import Any, Dict
 from xml.etree import ElementTree  # noqa
 
 import numpy as np
 from defusedxml.ElementTree import fromstring as defused_fromstring
 
-
-def sanitise(value: str) -> Any:
-    """Convert an arbitrary string to an int/float/bool if it appears to be one of these."""
-    try:
-        value = json.loads(value)
-    except json.decoder.JSONDecodeError:
-        pass
-    return value
+from upf_tools.utils import sanitise
 
 
 def block_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
