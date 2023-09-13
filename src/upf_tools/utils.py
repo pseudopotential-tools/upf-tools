@@ -1,7 +1,7 @@
 """Miscellaneous utilities for upf-tools."""
 
-import re
 import json
+import re
 import warnings
 from typing import Any
 
