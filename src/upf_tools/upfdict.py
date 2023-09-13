@@ -12,6 +12,7 @@ from packaging.version import Version
 from .utils import get_version_number
 from .v1 import upfv1contents_to_dict
 from .v2 import upfv2contents_to_dict
+from .oncv import ONCVInput
 
 
 class UPFDict(OrderedDict):
@@ -136,10 +137,10 @@ class UPFDict(OrderedDict):
 
         return "\n".join(dat)
 
-    def to_input(self) -> str:
+    def to_input(self) -> ONCVInput:
         """Extract the input file used to generate the pseudopotential (if it is present)."""
         if "inputfile" not in self["info"]:
             raise ValueError(
                 f"{self.__class__.__name__} does not appear to contain input file information"
             )
-        return self["info"]["inputfile"]
+        return ONCVInput.from_str(self["info"]["inputfile"])

@@ -19,7 +19,7 @@ class ONCVBlock:
         """Return the content of the block."""
         return " ".join([f"{str(v): >8}" for v in self.__dict__.values() if v is not None])
 
-    def to_text(self):
+    def to_str(self):
         """Return the text representation of the block."""
         return f"{self.columns}\n{self.content}"
 
@@ -207,10 +207,10 @@ class ONCVInput:
         """Create an :class:`ONCVInput` object from an ONCV input file."""
         with open(filename, "r") as f:
             txt = f.read()
-        return cls.from_text(txt)
+        return cls.from_str(txt)
 
     @classmethod
-    def from_text(cls, txt: str):
+    def from_str(cls, txt: str):
         """Create an :class:`ONCVInput` object from a string."""
         lines = [line.strip() for line in txt.split("\n")]
 
@@ -298,35 +298,35 @@ class ONCVInput:
             ONCVConfigurations(test_configs),
         )
 
-    def to_text(self):
+    def to_str(self):
         """Return the text representation of the ONCV input file."""
         return "\n".join(
             [
                 "# ATOM AND REFERENCE CONFIGURATION",
-                self.atom.to_text(),
-                self.reference_configuration.to_text(),
+                self.atom.to_str(),
+                self.reference_configuration.to_str(),
                 "# PSEUDOPOTENTIAL AND OPTIMIZATION",
                 "#   lmax",
                 f"{self.lmax: >8}",
-                self.optimization.to_text(),
+                self.optimization.to_str(),
                 "# LOCAL POTENTIAL",
-                self.local_potential.to_text(),
+                self.local_potential.to_str(),
                 "# VANDERBILT-KLEINMAN-BYLANDER PROJECTORS",
-                self.vkb_projectors.to_text(),
+                self.vkb_projectors.to_str(),
                 "# MODEL CORE CHARGE",
-                self.model_core_charge.to_text(),
+                self.model_core_charge.to_str(),
                 "# LOG DERIVATIVE ANALYSIS",
-                self.log_derivative_analysis.to_text(),
+                self.log_derivative_analysis.to_str(),
                 "# OUTPUT GRID",
-                self.output_grid.to_text(),
+                self.output_grid.to_str(),
                 "# TEST CONFIGURATIONS",
                 "# ncnf",
                 f"{len(self.test_configurations): >8}",
-                self.test_configurations.to_text(),
+                self.test_configurations.to_str(),
             ]
         )
 
     def to_file(self, filename: str):
         """Write the ONCV input file to disk."""
         with open(filename, "w") as f:
-            f.write(self.to_text())
+            f.write(self.to_str())
