@@ -145,7 +145,11 @@ class ONCVOutputGrid(ONCVEntry):
 
 @dataclass
 class ONCVInput:
-    """Class for the contents of an ONCV input file."""
+    """Class for the contents of an ONCV input file.
+
+    The :class:`ONCVInput` class is a dataclass that helps a user interact with input files for ``oncvpsp.x``, which
+    can sometimes be found in the ``info`` block of ``UPF`` files.
+    """
 
     atom: ONCVAtom
     reference_configuration: ONCVList[ONCVConfigurationSubshell]
@@ -399,7 +403,10 @@ class ONCVOutputDataList(UserList, Generic[T]):
 
 @dataclass
 class ONCVOutput:
-    """Class for all of the contents of an ONCV output file."""
+    """Class for all of the contents of an ONCV output file.
+
+    The :class:`ONCVOutput` class is a dataclass that helps a user interact with output files from ``oncvpsp.x``
+    """
 
     content: str
     input: ONCVInput
