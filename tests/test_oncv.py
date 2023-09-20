@@ -1,7 +1,6 @@
 """Tests for the ONCV classes."""
 
 from pathlib import Path
-import matplotlib.pyplot as plt
 
 import pytest
 
@@ -29,6 +28,4 @@ def test_oncv_input_roundtrip(filename):
 def test_oncv_output(filename):
     """Test creating a :class:`ONCVOutput` object from an ONCV input file."""
     oncvo = ONCVOutput.from_file(filename)
-
     oncvo.charge_densities.plot()
-
