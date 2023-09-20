@@ -1,8 +1,11 @@
 """Classes for handling ONCV input files."""
 
+import numpy as np
 from collections import UserList
-from dataclasses import dataclass
-from typing import Generic, Optional, TypeVar
+from dataclasses import dataclass, field
+from typing import Generic, Optional, TypeVar, Dict, Any, Union, List
+from pathlib import Path
+import matplotlib.pyplot as plt
 
 from upf_tools.utils import sanitise
 
@@ -11,16 +14,16 @@ class ONCVEntry:
     """Generic class for an entry in an ONCV input file."""
 
     @property
-    def columns(self):
+    def columns(self) -> str:
         """Return the column headers for the entry."""
         return "# " + " ".join([f"{str(k): >8}" for k in self.__dict__.keys()])[2:]
 
     @property
-    def content(self):
+    def content(self) -> str:
         """Return the content of the entry."""
         return " ".join([f"{str(v): >8}" for v in self.__dict__.values() if v is not None])
 
-    def to_str(self):
+    def to_str(self) -> str:
         """Return the text representation of the entry."""
         return f"{self.columns}\n{self.content}"
 
@@ -40,12 +43,15 @@ class ONCVList(UserList, Generic[T]):
         super().__init__(data)
 
     @property
-    def columns(self):
+    def columns(self) -> str:
         """Return the column headers for the list."""
-        return self.data[0].columns
+        if self.data:
+            return self.data[0].columns
+        else:
+            return ''
 
     @property
-    def content(self):
+    def content(self) -> str:
         """Return the content of the list."""
         out = ""
         if self.print_length:
@@ -53,7 +59,7 @@ class ONCVList(UserList, Generic[T]):
         out += "\n".join([d.content for d in self.data])
         return out
 
-    def to_str(self):
+    def to_str(self) -> str:
         """Return the text representation of the list."""
         return f"{self.columns}\n{self.content}"
 
@@ -172,7 +178,7 @@ class ONCVInput:
         ntot = atom.nc + atom.nv
         reference_configuration: ONCVList[ONCVConfigurationSubshell] = ONCVList(
             [
-                ONCVConfigurationSubshell(*[sanitise(v) for v in line.split()])
+                ONCVConfigurationSubshell(*[sanitise(v) for v in line.split()[:3]])
                 for line in content[1 : ntot + 1]
             ]
         )
@@ -247,7 +253,7 @@ class ONCVInput:
             test_configs,
         )
 
-    def to_str(self):
+    def to_str(self) -> str:
         """Return the text representation of the ONCV input file."""
         return "\n".join(
             [
@@ -279,3 +285,162 @@ class ONCVInput:
         """Write the ONCV input file to disk."""
         with open(filename, "w") as f:
             f.write(self.to_str())
+
+@dataclass
+class ONCVOutputData:
+    x: np.ndarray
+    y: np.ndarray
+    xlabel: str = 'radius ($a_0$)'
+    info: Dict[str, Any] = field(default_factory=dict)
+
+    def plot(self, ax=None, **kwargs):
+        if ax is None:
+            _, ax = plt.subplots()
+        if 'label' not in kwargs:
+            kwargs['label'] = ', '.join([f'{k}={v}' for k, v in self.info.items()])
+        if 'ls' not in kwargs and 'linestyle' not in kwargs and self.info.get('kind', None) == 'pseudo':
+            kwargs['ls'] = '--'
+        ax.plot(self.x, self.y, **kwargs)
+        ax.set_xlabel(self.xlabel)
+        ax.set_xlim([self.x.min(), self.x.max()])
+        ax.legend()
+        return ax
+
+    @classmethod
+    def from_str(cls, string: str, identifier: str, xcol: int, ycol: int, **kwargs):
+
+        relevant_lines = [line.strip().split() for line in string.split('\n') if line.strip().startswith(identifier)]
+
+        x = np.array([float(line[xcol]) for line in relevant_lines])
+        y = np.array([float(line[ycol]) for line in relevant_lines])
+
+        return cls(x, y, **kwargs)
+    
+    @classmethod
+    def from_file(cls, filename: Union[Path, str], identifier: str, xcol: int, ycol: int, **kwargs):
+        filename = Path(filename)
+
+        with open(filename, 'r') as f:
+            lines = f.read()
+
+        return cls.from_str(lines, identifier, xcol, ycol, **kwargs)
+
+class ONCVOutputDataList(UserList, Generic[T]):
+    """Generic class for a list of ONCVOutputData objects, with a few extra functionalities."""
+
+    label: str
+
+    def __init__(self, data, label: Optional[str] = ''):
+        super().__init__(data)
+        self.label = label
+
+    def plot(self, ax=None, kwargs_list: Optional[List[Dict[str, Any]]] = None, **kwargs):
+        if kwargs_list is None:
+            kwargs_list = [{} for _ in self.data]
+        for i, (data, specific_kwargs) in enumerate(zip(self.data, kwargs_list)):
+
+            # Make the colors match for entries that only differ by info['kind']
+            if ax and 'color' not in specific_kwargs and 'color' not in kwargs:
+
+                # Get the previous colors used and the matching info dictionaries
+                colors = [line.get_color() for line in ax.get_lines()[-i:]]
+                infos = [{k: v for k, v in d.info.items() if k != 'kind'} for d in self.data[:i]]
+
+                # Use the same color if the dictionaries match (ignoring the 'kind' key)
+                for info, color in zip(infos, colors):
+                    if info == {k: v for k, v in data.info.items() if k != 'kind'}:
+                        specific_kwargs['color'] = color
+                        break
+
+            ax = data.plot(ax, **specific_kwargs, **kwargs)
+        ax.set_title(self.label)
+
+        # Set xlimits to the largest range of x values
+        ax.set_xlim([min([d.x.min() for d in self.data]), max([d.x.max() for d in self.data])])
+
+        return ax
+
+    @classmethod
+    def from_str(cls, label: str, string: str, identifiers, xcol: int, ycols: List[int], kwargs_list: Optional[List[Dict[str, Any]]] = None):
+        if kwargs_list is None:
+            kwargs_list = [{} for _ in identifiers]
+        oncvlist = cls([ONCVOutputData.from_str(string, identifier, xcol, ycol, **kwargs)
+                        for identifier, ycol, kwargs in zip(identifiers, ycols, kwargs_list)])
+        oncvlist.label = label
+        return oncvlist
+
+
+@dataclass
+class ONCVOutput:
+    content: str
+    input: ONCVInput
+    semilocal_ion_pseudopotentials: ONCVOutputDataList[ONCVOutputData]
+    local_pseudopotential: ONCVOutputData
+    charge_densities: ONCVOutputDataList[ONCVOutputData]
+    wavefunctions: ONCVOutputDataList[ONCVOutputData]
+    arctan_log_derivatives: ONCVOutputDataList[ONCVOutputData]
+    projectors: ONCVOutputDataList[ONCVOutputData]
+    energy_error: ONCVOutputDataList[ONCVOutputData]
+
+    @classmethod
+    def from_file(cls, filename: str):
+        with open(filename, 'r') as f:
+            content = f.read()
+
+        splitcontent = content.split('\n')
+
+        # ONCV input
+        istart = splitcontent.index('# ATOM AND REFERENCE CONFIGURATION')
+        input = ONCVInput.from_str('\n'.join(splitcontent[istart:]))
+
+        # Semilocal ion pseudopotentials
+        slp_kwargs = [{'info': {'l': l}} for l in range(input.lmax + 1)]
+        semilocal_ion_pseudopotentials = ONCVOutputDataList.from_str('semilocal ion pseudopotentials', content, ['!p' for _ in range(input.lmax + 1)], 1, range(3, input.lmax + 4), slp_kwargs)
+
+        # Local pseudopotential
+        local_pseudopotential = ONCVOutputData.from_str(content, '!L', 1, 2)
+
+        # Charge densities
+        cd_kwargs = [{'info': {'rho': rho}} for rho in ['C', 'M', 'V']]
+        charge_densities = ONCVOutputDataList.from_str('charge densities', content, ['!r ', '!r ', '!r '], 1, [2, 3, 4], cd_kwargs)
+
+        # Pseudo and real wavefunctions
+        il_pairs = sorted(list(set([line.strip().split()[1] for line in splitcontent if line.strip().startswith('&')])))
+        kinds = ['full', 'pseudo'] 
+        kwargs = [{'info': {'kind': kind, 'i': int(il[0]), 'l': int(il[1])}} for il in il_pairs for kind in kinds]
+        identifiers = ['&    ' + il for il in il_pairs for _ in kinds]
+        ycols = [kind_col for _ in range(len(il_pairs)) for kind_col in [3, 4]]
+        wavefunctions = ONCVOutputDataList.from_str('wavefunctions', content, identifiers, 2, ycols, kwargs)
+
+        # Arctan log derivatives
+        identifiers = [f'!      {l}' for l in range(4) for kind in kinds]
+        ycols = [kind_col for _ in range(4) for kind_col in [3, 4]]
+        kwargs = [{'info': {'kind': kind, 'l': l}} for l in range(4) for kind in kinds]
+        arctan_log_derivatives = ONCVOutputDataList.from_str('arctan log derivatives', content, identifiers, 2, ycols, kwargs)
+
+        # Projectors
+        ls = [proj.l for proj in input.vkb_projectors for _ in range(proj.nproj)]
+        identifiers = [f'!J     {l}' for l in ls]
+        ycols = [x + 3 for proj in input.vkb_projectors for x in range(proj.nproj)]
+        kwargs = [{'info': {'i': i, 'l': proj.l}} for proj in input.vkb_projectors for i in range(proj.nproj)]
+        projectors = ONCVOutputDataList.from_str('projectors', content, identifiers, 2, ycols, kwargs)
+
+        # Energy error per electron
+        identifiers = [f'!C     {l}' for l in range(input.lmax + 1)]
+        eepe_kwargs = [{'info': {'l': l}, 'xlabel': 'cutoff energy (Ha)'} for l in range(input.lmax + 1)]
+        eepe = ONCVOutputDataList.from_str('energy error per electron', content, identifiers, 2, [3 for _ in identifiers], eepe_kwargs)
+
+        import ipdb
+        ipdb.set_trace()
+
+        return cls(content, input, semilocal_ion_pseudopotentials, local_pseudopotential, charge_densities, wavefunctions, arctan_log_derivatives, projectors, eepe)
+        
+
+    @property  
+    def upf(self) -> str:
+
+        flines = self.content.split('\n')
+
+        [istart] = [flines.index(x) for x in flines if '<UPF' in x]
+        [iend] = [flines.index(x) for x in flines if '</UPF' in x]
+        return '\n'.join(flines[istart:iend+1])
