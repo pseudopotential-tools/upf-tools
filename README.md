@@ -1,8 +1,6 @@
-<!--
 <p align="center">
-  <img src="https://github.com/elinscott/upf_tools/raw/main/docs/source/logo.png" height="150">
+  <img src="https://github.com/elinscott/upf_tools/raw/main/docs/source/_static/upf-tools-icon.png" height="150">
 </p>
--->
 
 <h1 align="center">
   upf-tools
