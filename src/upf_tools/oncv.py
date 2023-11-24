@@ -84,6 +84,7 @@ class ONCVConfigurationSubshell(ONCVEntry):
     n: int
     l: int
     f: float
+    energy: float = -0.0
 
 
 @dataclass(repr=False)
@@ -183,7 +184,7 @@ class ONCVInput:
         ntot = atom.nc + atom.nv
         reference_configuration: ONCVList[ONCVConfigurationSubshell] = ONCVList(
             [
-                ONCVConfigurationSubshell(*[sanitise(v) for v in line.split()[:3]])
+                ONCVConfigurationSubshell(*[sanitise(v) for v in line.split()])
                 for line in content[1 : ntot + 1]
             ]
         )
@@ -529,3 +530,9 @@ class ONCVOutput:
         [istart] = [flines.index(x) for x in flines if "<UPF" in x]
         [iend] = [flines.index(x) for x in flines if "</UPF" in x]
         return "\n".join(flines[istart : iend + 1])
+
+    def to_upfdict(self):
+        """Return the UPF part of the ONCV output file as a UPFDict."""
+        from upf_tools import UPFDict
+
+        return UPFDict.from_str(self.upf)

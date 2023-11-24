@@ -121,7 +121,9 @@ class UPFDict(OrderedDict):
         rmesh = self["mesh"]["r"]
 
         # Construct a logarithmic mesh
-        xmesh = [np.log(max(x, 1e-8)) for x in rmesh]
+        min_r = 1e-8
+        rmesh = [max(r, min_r) for r in rmesh]
+        xmesh = np.log(rmesh)
 
         # Extract the pseudo wavefunctions, sorted by l and n
         if "chi" not in self["pswfc"]:
@@ -132,7 +134,7 @@ class UPFDict(OrderedDict):
         dat = [f"{len(rmesh)} {len(chis)}", " ".join([str(chi["l"]) for chi in chis])]
         dat += [
             f"{x:20.15f} {r:20.15f} " + " ".join([f"{v:25.15e}" for v in row])
-            for x, r, row in zip(xmesh[1:], rmesh[1:], data[1:])
+            for x, r, row in zip(xmesh, rmesh, data)
         ]
 
         return "\n".join(dat)
