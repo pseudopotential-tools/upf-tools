@@ -3,33 +3,24 @@
 </h1>
 
 <p align="center">
-    <a href="https://github.com/elinscott/upf-tools/actions/workflows/tests.yml">
-        <img alt="Tests" src="https://github.com/elinscott/upf-tools/workflows/Tests/badge.svg" />
-    </a>
+    <a href="https://github.com/pseudopotential-tools/upf-tools/actions/workflows/tests.yml">
+        <img alt="Tests" src="https://github.com/pseudopotential-tools/upf-tools/workflows/Tests/badge.svg" /></a>
     <a href="https://pypi.org/project/upf-tools">
-        <img alt="PyPI" src="https://img.shields.io/pypi/v/upf-tools" />
-    </a>
+        <img alt="PyPI" src="https://img.shields.io/pypi/v/upf-tools" /></a>
     <a href="https://pypi.org/project/upf-tools">
-        <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/upf-tools" />
-    </a>
-    <a href="https://github.com/elinscott/upf-tools/blob/main/LICENSE">
-        <img alt="PyPI - License" src="https://img.shields.io/pypi/l/upf-tools" />
-    </a>
+        <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/upf-tools" /></a>
+    <a href="https://github.com/pseudopotential-tools/upf-tools/blob/main/LICENSE">
+        <img alt="PyPI - License" src="https://img.shields.io/pypi/l/upf-tools" /></a>
     <a href='https://upf-tools.readthedocs.io/en/latest/?badge=latest'>
-        <img src='https://readthedocs.org/projects/upf-tools/badge/?version=latest' alt='Documentation Status' />
-    </a>
-    <a href="https://codecov.io/gh/elinscott/upf-tools/branch/main">
-        <img src="https://codecov.io/gh/elinscott/upf-tools/branch/main/graph/badge.svg" alt="Codecov status" />
-    </a>  
+        <img src='https://readthedocs.org/projects/upf-tools/badge/?version=latest' alt='Documentation Status' /></a>
+    <a href="https://codecov.io/gh/pseudopotential-tools/upf-tools/branch/main">
+        <img src="https://codecov.io/gh/pseudopotential-tools/upf-tools/branch/main/graph/badge.svg" alt="Codecov status" /></a>  
     <a href="https://github.com/cthoyt/cookiecutter-python-package">
-        <img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-snekpack-blue" /> 
-    </a>
+        <img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-snekpack-blue" /></a>
     <a href='https://github.com/psf/black'>
-        <img src='https://img.shields.io/badge/code%20style-black-000000.svg' alt='Code style: black' />
-    </a>
-    <a href="https://github.com/elinscott/upf-tools/blob/main/.github/CODE_OF_CONDUCT.md">
-        <img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Contributor Covenant"/>
-    </a>
+        <img src='https://img.shields.io/badge/code%20style-black-000000.svg' alt='Code style: black' /></a>
+    <a href="https://github.com/pseudopotential-tools/upf-tools/blob/main/.github/CODE_OF_CONDUCT.md">
+        <img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Contributor Covenant"/></a>
 </p>
 
 Tools for handling `.upf` (Unified Pseudopotential Format) files
@@ -69,13 +60,13 @@ $ pip install upf_tools
 The most recent code and data can be installed directly from GitHub with:
 
 ```bash
-$ pip install git+https://github.com/elinscott/upf_tools.git
+$ pip install git+https://github.com/pseudopotential-tools/upf_tools.git
 ```
 
 ## 👐 Contributing
 
 Contributions, whether filing an issue, making a pull request, or forking, are appreciated. See
-[CONTRIBUTING.md](https://github.com/elinscott/upf_tools/blob/master/.github/CONTRIBUTING.md) for more information on getting involved.
+[CONTRIBUTING.md](https://github.com/pseudopotential-tools/upf_tools/blob/master/.github/CONTRIBUTING.md) for more information on getting involved.
 
 ## 👋 Attribution
 
@@ -126,7 +117,7 @@ The final section of the README is for if you want to get involved by making a c
 To install in development mode, use the following:
 
 ```bash
-$ git clone git+https://github.com/elinscott/upf_tools.git
+$ git clone git+https://github.com/pseudopotential-tools/upf_tools.git
 $ cd upf_tools
 $ pip install -e .
 ```
@@ -140,14 +131,14 @@ run reproducibly with:
 $ tox
 ```
 
-Additionally, these tests are automatically re-run with each commit in a [GitHub Action](https://github.com/elinscott/upf_tools/actions?query=workflow%3ATests).
+Additionally, these tests are automatically re-run with each commit in a [GitHub Action](https://github.com/pseudopotential-tools/upf_tools/actions?query=workflow%3ATests).
 
 ### 📖 Building the Documentation
 
 The documentation can be built locally using the following:
 
 ```shell
-$ git clone git+https://github.com/elinscott/upf_tools.git
+$ git clone git+https://github.com/pseudopotential-tools/upf_tools.git
 $ cd upf_tools
 $ tox -e docs
 $ open docs/build/html/index.html
