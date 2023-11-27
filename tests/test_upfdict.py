@@ -44,7 +44,7 @@ class TestUPFDictMethods:
     def test_to_input(self, upf_instance):
         """Test generating an ONCVPSP file via ``to_oncvpsp``."""
         if "inputfile" in upf_instance["info"]:
-            if '&input' in upf_instance["info"].get("inputfile", ""):
+            if "&input" in upf_instance["info"].get("inputfile", ""):
                 upf_instance.to_ld1_input()
             else:
                 upf_instance.to_oncvpsp_input()

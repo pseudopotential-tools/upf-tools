@@ -14,3 +14,4 @@ def test_projector_creation(filename):
     """Test creating a :class:`Projectors` object from a ``.dat`` file."""
     projectors = Projectors.from_file(filename)
     assert len(projectors) > 0
+    projectors.plot()

@@ -4,6 +4,7 @@ import builtins
 import io
 import os
 
+import matplotlib.pyplot as plt
 import pytest
 
 
@@ -46,3 +47,9 @@ def cleanup_files(monkeypatch):
     yield
     for file in files:
         os.remove(file)
+
+
+@pytest.fixture(autouse=True)
+def autoclose_figures():
+    """Close all figures after each test."""
+    plt.close("all")
