@@ -5,9 +5,3 @@ The :class:`UPFDict` class is the heart of ``upf-tools``. It is an ordered dicti
 
 .. autoclass:: upf_tools.UPFDict
     :members:
-
-.. autoclass:: upf_tools.oncv.ONCVInput
-    :members:
-
-.. autoclass:: upf_tools.oncv.ONCVOutput
-    :members:
