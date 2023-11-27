@@ -41,13 +41,10 @@ class TestUPFDictMethods:
         """Test generating a ``.dat`` file via ``from_upf``."""
         upf_instance.to_dat()
 
-    def test_to_oncvpsp(self, upf_instance):
+    def test_to_input(self, upf_instance):
         """Test generating an ONCVPSP file via ``to_oncvpsp``."""
         if "inputfile" in upf_instance["info"]:
-            try:
+            if '&input' in upf_instance["info"].get("inputfile", ""):
+                upf_instance.to_ld1_input()
+            else:
                 upf_instance.to_oncvpsp_input()
-            except ValueError as e:
-                if "This pseudopotential was generated with ld1.x" in str(e):
-                    pass
-                else:
-                    raise e
