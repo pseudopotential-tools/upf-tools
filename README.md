@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="./docs/source/_static/upf-tools-icon.png" height="150">
-</p>
-
 <h1 align="center">
   upf-tools
 </h1>
