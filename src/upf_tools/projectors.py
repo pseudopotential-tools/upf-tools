@@ -16,7 +16,7 @@ class Projector:
     """A single projector."""
 
     x: np.ndarray
-    y: np.ndarray = field(default=np.zeros(1))
+    y: np.ndarray = np.array([])
     l: int = 0
     _x: np.ndarray = field(init=False, repr=False)
     _x_min: float = field(default=-16, init=False, repr=False)
