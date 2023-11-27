@@ -1,9 +1,3 @@
-<!--
-<p align="center">
-  <img src="https://github.com/elinscott/upf_tools/raw/main/docs/source/logo.png" height="150">
-</p>
--->
-
 <h1 align="center">
   upf-tools
 </h1>
