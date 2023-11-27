@@ -52,4 +52,5 @@ def cleanup_files(monkeypatch):
 @pytest.fixture(autouse=True)
 def autoclose_figures():
     """Close all figures after each test."""
+    yield
     plt.close("all")
