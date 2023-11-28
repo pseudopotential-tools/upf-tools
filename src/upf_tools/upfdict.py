@@ -140,6 +140,7 @@ class UPFDict(OrderedDict):
         return "\n".join(dat)
 
     def to_input(self) -> str:
+        """Extract the contents of the input file block."""
         if "inputfile" not in self["info"]:
             raise ValueError(
                 f"{self.__class__.__name__} does not appear to contain input file information"
