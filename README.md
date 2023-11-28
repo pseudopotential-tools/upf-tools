@@ -36,16 +36,16 @@ psp = UPFDict.from_upf('/path/to/file.upf')
 
 ### Command Line Interface
 
-The `upf_tools` command line tool is automatically installed. It can
+The `upf-tools` command line tool is automatically installed. It can
 be used from the shell with the `--help` flag to show all subcommands:
 
 ```shell
-$ upf_tools --help
+$ upf-tools --help
 ```
 
 For example, you can extract the input file that was used to generate a `.upf` file via
 ```shell
-$ upf_tools to-input /path/to/pseudo.upf > pseudo.in
+$ upf-tools to-input /path/to/pseudo.upf > pseudo.in
 ```
 
 ## 🚀 Installation
