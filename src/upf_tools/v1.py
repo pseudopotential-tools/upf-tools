@@ -80,7 +80,7 @@ def sanitise_header(dct: Dict[str, Any]) -> Dict[str, Any]:
     return dct
 
 
-def sanitise_numeric_array(dct: Dict[str, Any]) -> NDArray[np.float_]:
+def sanitise_numeric_array(dct: Dict[str, Any]) -> NDArray[np.float64]:
     """Sanitise a dict that only contains a numeric array."""
     array = np.array([v for row in dct["content"] for v in row.split()], dtype=float)
     return array
