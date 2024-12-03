@@ -8,7 +8,7 @@ This project uses the [GitHub Flow](https://guides.github.com/introduction/flow)
 model for code contributions. Follow these steps:
 
 1. [Create a fork](https://help.github.com/articles/fork-a-repo) of the upstream
-   repository at [`elinscott/upf_tools`](https://github.com/elinscott/upf_tools)
+   repository at [`pseudopotential-tools/upf-tools`](https://github.com/pseudopotential-tools/upf-tools)
    on your GitHub account (or in one of your organizations)
 2. [Clone your fork](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
    with `git clone https://github.com/<your namespace here>/upf_tools.git`
@@ -89,7 +89,7 @@ resolve conflicts against the main branch. After cloning, you should add the
 upstream repository with
 
 ```shell
-$ git remote add elinscott https://github.com/elinscott/upf_tools.git
+$ git remote add pseudopotential-tools https://github.com/pseudopotential-tools/upf-tools.git
 ```
 
 Then, you can merge upstream code into your branch. You can also use the GitHub
