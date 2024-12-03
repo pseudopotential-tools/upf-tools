@@ -53,6 +53,16 @@ class UPFDict(OrderedDict):
             f"filename={self.filename}, version={self.version}))"
         )
 
+    def __reduce__(self):
+        """Create a tuple with the necessary information to reconstruct the object."""
+        # Include filename and version in the arguments
+        args = (
+            self.version,
+            self.filename,
+            list(self.items()),
+        )
+        return (self.__class__, args)
+
     @property
     def filename(self) -> Path:
         """The filename of the pseudopotential (including the path), protected to always be a :class:`Path`."""
