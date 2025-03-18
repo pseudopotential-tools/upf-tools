@@ -2,6 +2,7 @@
 
 from typing import Any, Dict
 from xml.etree import ElementTree  # noqa
+from collections import OrderedDict
 
 import numpy as np
 from defusedxml.ElementTree import fromstring as defused_fromstring
@@ -9,7 +10,7 @@ from defusedxml.ElementTree import fromstring as defused_fromstring
 from upf_tools.utils import sanitise
 
 
-def block_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
+def block_to_dict(element: ElementTree.Element) -> OrderedDict[str, Any]:
     """
     Convert an xml string to a nested Dict.
 
@@ -21,11 +22,7 @@ def block_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
 
     :return: a (possibly nested) dict
     """
-    result = {
-        k.lower(): sanitise(v)
-        for k, v in element.attrib.items()
-        if k not in ["type", "columns", "size"]
-    }
+    result = OrderedDict(**{k.lower(): sanitise(v) for k, v in element.attrib.items() if k not in ["type", "columns", "size"]})
 
     # Manually adding n information if it is missing
     if element.tag.startswith("PP_CHI") and "n" not in result and "label" in result:
@@ -34,10 +31,11 @@ def block_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
     # If the element has no children, extract the contents of element.text
     if len(element) == 0:
         if element.text is not None and element.text.strip():
+            text = element.text.strip()
             try:
-                value = np.array(element.text.strip().split(), dtype=float)
+                value: Any = np.array(text.split(), dtype=float)
             except ValueError:
-                value = element.text.strip()
+                value = text
             if result:
                 result["content"] = value
             else:
@@ -57,7 +55,7 @@ def block_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
         else:
             result[tag] = child_result
 
-    return result
+    return OrderedDict({k: result[k] for k in sorted(result)})
 
 
 def upfv2contents_to_dict(filecontents: str):
