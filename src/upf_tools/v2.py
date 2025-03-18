@@ -1,6 +1,7 @@
 """Various helpful xml-related functions for upf-tools."""
 
 from __future__ import annotations
+
 from collections import OrderedDict
 from typing import Any, Dict
 from xml.etree import ElementTree  # noqa
