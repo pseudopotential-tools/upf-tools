@@ -34,9 +34,9 @@ def sanitise(value: str) -> Any:
         pass
 
     # json.loads won't convert these to True/False, so do it manually
-    if value == 'T':
+    if value == "T":
         return True
-    elif value == 'F':
+    elif value == "F":
         return False
     else:
         return value

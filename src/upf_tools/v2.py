@@ -1,8 +1,8 @@
 """Various helpful xml-related functions for upf-tools."""
 
+from collections import OrderedDict
 from typing import Any, Dict
 from xml.etree import ElementTree  # noqa
-from collections import OrderedDict
 
 import numpy as np
 from defusedxml.ElementTree import fromstring as defused_fromstring
@@ -22,7 +22,13 @@ def block_to_dict(element: ElementTree.Element) -> OrderedDict[str, Any]:
 
     :return: a (possibly nested) dict
     """
-    result = OrderedDict(**{k.lower(): sanitise(v) for k, v in element.attrib.items() if k not in ["type", "columns", "size"]})
+    result = OrderedDict(
+        **{
+            k.lower(): sanitise(v)
+            for k, v in element.attrib.items()
+            if k not in ["type", "columns", "size"]
+        }
+    )
 
     # Manually adding n information if it is missing
     if element.tag.startswith("PP_CHI") and "n" not in result and "label" in result:
