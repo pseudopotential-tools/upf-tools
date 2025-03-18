@@ -32,4 +32,11 @@ def sanitise(value: str) -> Any:
         value = json.loads(value)
     except json.decoder.JSONDecodeError:
         pass
-    return value
+
+    # json.loads won't convert these to True/False, so do it manually
+    if value == "T":
+        return True
+    elif value == "F":
+        return False
+    else:
+        return value

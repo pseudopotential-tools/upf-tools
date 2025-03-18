@@ -1,6 +1,9 @@
 """Various helpful xml-related functions for upf-tools."""
 
-from typing import Any, Dict
+from __future__ import annotations
+
+from collections import OrderedDict
+from typing import Any
 from xml.etree import ElementTree  # noqa
 
 import numpy as np
@@ -9,7 +12,7 @@ from defusedxml.ElementTree import fromstring as defused_fromstring
 from upf_tools.utils import sanitise
 
 
-def block_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
+def block_to_dict(element: ElementTree.Element) -> OrderedDict[str, Any]:
     """
     Convert an xml string to a nested Dict.
 
@@ -34,15 +37,16 @@ def block_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
     # If the element has no children, extract the contents of element.text
     if len(element) == 0:
         if element.text is not None and element.text.strip():
+            text = element.text.strip()
             try:
-                value = np.array(element.text.strip().split(), dtype=float)
+                value: Any = np.array(text.split(), dtype=float)
             except ValueError:
-                value = element.text.strip()
+                value = text
             if result:
                 result["content"] = value
             else:
                 result = value
-        return result
+        return result  # type: ignore
 
     # If the element has children, extract the contents of each child
     for child in element:
@@ -57,7 +61,7 @@ def block_to_dict(element: ElementTree.Element) -> Dict[str, Any]:
         else:
             result[tag] = child_result
 
-    return result
+    return OrderedDict({k: result[k] for k in sorted(result)})
 
 
 def upfv2contents_to_dict(filecontents: str):
