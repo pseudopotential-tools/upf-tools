@@ -22,13 +22,11 @@ def block_to_dict(element: ElementTree.Element) -> OrderedDict[str, Any]:
 
     :return: a (possibly nested) dict
     """
-    result = OrderedDict(
-        **{
-            k.lower(): sanitise(v)
-            for k, v in element.attrib.items()
-            if k not in ["type", "columns", "size"]
-        }
-    )
+    result = {
+        k.lower(): sanitise(v)
+        for k, v in element.attrib.items()
+        if k not in ["type", "columns", "size"]
+    }
 
     # Manually adding n information if it is missing
     if element.tag.startswith("PP_CHI") and "n" not in result and "label" in result:
@@ -46,7 +44,7 @@ def block_to_dict(element: ElementTree.Element) -> OrderedDict[str, Any]:
                 result["content"] = value
             else:
                 result = value
-        return result
+        return result  # type: ignore
 
     # If the element has children, extract the contents of each child
     for child in element:
