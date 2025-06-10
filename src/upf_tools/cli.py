@@ -51,6 +51,9 @@ def to_input(filename):
 def to_dat(filename):
     """Extract a dat file from a pseudopotential.
 
+    This file contains projectors that ``wannier90.x`` can read (see
+    https://wannier90.readthedocs.io/en/latest/user_guide/wannier90/projections/#advanced-usage).
+
     :param filename: the name of the .upf file
     :type filename: str
     """
