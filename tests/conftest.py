@@ -6,6 +6,7 @@ import os
 
 import matplotlib.pyplot as plt
 import pytest
+from .fixtures import upffile
 
 
 def patch_open(open_func, files):
