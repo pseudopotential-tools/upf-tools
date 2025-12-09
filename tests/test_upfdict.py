@@ -1,20 +1,13 @@
 """Testing the :class:`UPFDict` class."""
 
-from pathlib import Path
-
 import pytest
 
 from upf_tools import UPFDict
 
-sssp = Path(__file__).parent / "sssp"
 
-upffiles = [f for ext in ["upf", "UPF"] for f in sssp.glob(f"*.{ext}")]
-
-
-@pytest.mark.parametrize("filename", upffiles)
-def test_from_upf(filename):
+def test_from_upf(upffile):
     """Test creating a :class:`UPFDict` object via the classmethod ``from_upf``."""
-    psp = UPFDict.from_upf(filename)
+    psp = UPFDict.from_upf(upffile)
     assert "header" in psp
     assert "z_valence" in psp["header"]
     assert "number_of_proj" in psp["header"]
@@ -23,17 +16,16 @@ def test_from_upf(filename):
     assert "r" in psp["mesh"]
     assert "local" in psp
     assert "rhoatom" in psp
-    assert psp.filename == filename
+    assert psp.filename == upffile
 
 
 @pytest.fixture
-def upf_instance(request):
+def upf_instance(upffile):
     """Create a :class:`UPFDict` object from a ``.upf`` file."""
-    instance = UPFDict.from_upf(request.param)
+    instance = UPFDict.from_upf(upffile)
     return instance
 
 
-@pytest.mark.parametrize("upf_instance", upffiles, indirect=True, ids=[f.name for f in upffiles])
 class TestUPFDictMethods:
     """Test the methods of the :class:`UPFDict` class."""
 

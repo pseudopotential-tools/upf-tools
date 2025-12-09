@@ -7,6 +7,8 @@ import os
 import matplotlib.pyplot as plt
 import pytest
 
+from .fixtures import upffile  # noqa: F401
+
 
 def patch_open(open_func, files):
     """Wrap the function open_func to keep track of any files that have been created."""
