@@ -1,23 +1,30 @@
+"""A pydantic model for UPF pseudopotential files."""
+
 from __future__ import annotations
 
-from pydantic import BaseModel
-from packaging.version import Version
 from collections import OrderedDict
-from typing import Any
 from pathlib import Path
+from typing import Any
 
+from packaging.version import Version
+from pydantic import BaseModel
+
+from .utils import get_version_number
 from .v1 import upfv1contents_to_dict
 from .v2 import upfv2contents_to_dict
-from .utils import get_version_number
+
 
 class UPFModel(BaseModel):
+    """Minimal Pydantic model for a UPF pseudopotential file.
+
+    The actual UPF contents are not properly validated for the moment and are simply stored in a dictionary.
+    """
+
     version: Version
     filename: Path | None = None
     content: OrderedDict[str, Any]
 
-    model_config = {"arbitrary_types_allowed": True,
-                    "validate_assignment": True,
-                    "extra": "forbid"}
+    model_config = {"arbitrary_types_allowed": True, "validate_assignment": True, "extra": "forbid"}
 
     @classmethod
     def from_str(cls, string: str) -> UPFModel:
@@ -32,7 +39,7 @@ class UPFModel(BaseModel):
         else:
             raise ValueError(f"Unsupported UPF version: {version}")
         return cls(version=version, content=content)
-    
+
     @classmethod
     def from_upf(cls, filename: Path | str) -> UPFModel:
         """Create a :class:`UPFModel` object from a ``.upf`` file."""
@@ -45,7 +52,6 @@ class UPFModel(BaseModel):
 
         # Use cls.from_str to construct the pseudopotential information
         upf_model = cls.from_str(flines)
-        upf_model.filename = str(filename)
+        upf_model.filename = filename
 
         return upf_model
-

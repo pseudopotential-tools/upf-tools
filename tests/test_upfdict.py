@@ -4,6 +4,7 @@ import pytest
 
 from upf_tools import UPFDict
 
+
 def test_from_upf(upffile):
     """Test creating a :class:`UPFDict` object via the classmethod ``from_upf``."""
     psp = UPFDict.from_upf(upffile)
@@ -19,9 +20,9 @@ def test_from_upf(upffile):
 
 
 @pytest.fixture
-def upf_instance(request):
+def upf_instance(upffile):
     """Create a :class:`UPFDict` object from a ``.upf`` file."""
-    instance = UPFDict.from_upf(request.param)
+    instance = UPFDict.from_upf(upffile)
     return instance
 
 
