@@ -35,9 +35,7 @@ def block_to_dict(element: ElementTree.Element) -> OrderedDict[str, Any]:
 
     :return: a (possibly nested) dict
     """
-    result = {
-        k.lower(): sanitise(v) for k, v in element.attrib.items() if k not in _ARRAY_ATTRS
-    }
+    result = {k.lower(): sanitise(v) for k, v in element.attrib.items() if k not in _ARRAY_ATTRS}
 
     # Manually adding n information if it is missing
     if element.tag.startswith("PP_CHI") and "n" not in result and "label" in result:
