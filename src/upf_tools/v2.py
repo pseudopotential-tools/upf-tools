@@ -36,9 +36,7 @@ def block_to_dict(element: ElementTree.Element) -> OrderedDict[str, Any]:
     :return: a (possibly nested) dict
     """
     result = {
-        k.lower(): sanitise(v)
-        for k, v in element.attrib.items()
-        if k not in ["type", "columns", "size"]
+        k.lower(): sanitise(v) for k, v in element.attrib.items() if k not in _ARRAY_ATTRS
     }
 
     # Manually adding n information if it is missing
@@ -99,7 +97,7 @@ def _format_array(arr: np.ndarray) -> str:
     """
     flat = np.asarray(arr).ravel()
     # 17 significant digits guarantees lossless float64 round-trip (IEEE 754).
-    parts = [f"{v: .17E}" for v in flat]
+    parts = [f"{v:.17E}" for v in flat]
     lines = [
         " ".join(parts[i : i + _DEFAULT_COLUMNS]) for i in range(0, len(parts), _DEFAULT_COLUMNS)
     ]

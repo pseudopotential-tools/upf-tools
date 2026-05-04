@@ -47,7 +47,7 @@ class TestUPFDictMethods:
         if upf_instance.version < Version("2.0.0"):
             with pytest.raises(NotImplementedError):
                 upf_instance.to_str()
-            pytest.skip("v1 writing not yet implemented")
+            return
         text = upf_instance.to_str()
         assert text.startswith("<UPF")
         reparsed = UPFDict.from_str(text)

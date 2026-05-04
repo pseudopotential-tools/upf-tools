@@ -137,7 +137,7 @@ class UPFDict(OrderedDict):
         """Write this :class:`UPFDict` to ``filename`` in UPF v2 format.
 
         :param filename: destination path
-        :returns: the resolved :class:`Path` written to
+        :returns: the :class:`Path` written to
         """
         path = Path(filename) if not isinstance(filename, Path) else filename
         path.write_text(self.to_str(), encoding="utf-8")
