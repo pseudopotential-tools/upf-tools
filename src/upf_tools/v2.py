@@ -93,13 +93,15 @@ def _format_array(arr: np.ndarray) -> str:
 
     The result is wrapped at ``_DEFAULT_COLUMNS`` values per line to
     match the QE convention.
+
+    :param arr: array of floats to format
+    :returns: a string containing the formatted array, prefixed and suffixed with newlines
     """
     flat = np.asarray(arr).ravel()
     # 17 significant digits guarantees lossless float64 round-trip (IEEE 754).
     parts = [f"{v: .17E}" for v in flat]
     lines = [
-        " ".join(parts[i : i + _DEFAULT_COLUMNS])
-        for i in range(0, len(parts), _DEFAULT_COLUMNS)
+        " ".join(parts[i : i + _DEFAULT_COLUMNS]) for i in range(0, len(parts), _DEFAULT_COLUMNS)
     ]
     return "\n" + "\n".join(lines) + "\n"
 
@@ -142,6 +144,10 @@ def _build_element(tag: str, value: Any) -> ElementTree.Element:
     * ``Mapping`` -> attributes from non-``content`` keys; nested dicts/lists
       become child elements; a ``content`` key (if present) becomes the text
       of *this* element. Lists become numbered children.
+
+    :param tag: tag name to give the new element
+    :param value: parsed value to serialise
+    :returns: a new :class:`xml.etree.ElementTree.Element`
     """
     elem = ElementTree.Element(tag)
 
@@ -204,17 +210,9 @@ def _build_element(tag: str, value: Any) -> ElementTree.Element:
 def dict_to_upfv2(upfdict: Mapping[str, Any], version: str) -> str:
     """Serialise a parsed UPF dictionary back to UPF v2 (XML) text.
 
-    Parameters
-    ----------
-    upfdict
-        Mapping in the shape produced by :func:`upfv2contents_to_dict`.
-    version
-        UPF version string to record on the root ``<UPF version="...">``.
-
-    Returns
-    -------
-    str
-        A complete UPF v2 file ready to be written to disk.
+    :param upfdict: mapping in the shape produced by :func:`upfv2contents_to_dict`
+    :param version: UPF version string to record on the root ``<UPF version="...">``
+    :returns: a complete UPF v2 file ready to be written to disk
     """
     root = ElementTree.Element("UPF", attrib={"version": str(version)})
     for k, v in upfdict.items():

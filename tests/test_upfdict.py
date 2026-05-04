@@ -43,11 +43,7 @@ class TestUPFDictMethods:
                 upf_instance.to_oncvpsp_input()
 
     def test_to_str_roundtrip(self, upf_instance):
-        """Round-trip: ``read -> to_str -> from_str`` yields an equal :class:`UPFDict`.
-
-        Only v2 (XML) is supported on write; v1 fixtures raise
-        :class:`NotImplementedError` and are skipped.
-        """
+        """Test that ``read -> to_str -> from_str`` yields an equal :class:`UPFDict`."""
         if upf_instance.version < Version("2.0.0"):
             with pytest.raises(NotImplementedError):
                 upf_instance.to_str()
