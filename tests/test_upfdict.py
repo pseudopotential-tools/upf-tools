@@ -1,6 +1,7 @@
 """Testing the :class:`UPFDict` class."""
 
 import pytest
+from packaging.version import Version
 
 from upf_tools import UPFDict
 
@@ -40,3 +41,23 @@ class TestUPFDictMethods:
                 upf_instance.to_ld1_input()
             else:
                 upf_instance.to_oncvpsp_input()
+
+    def test_to_str_roundtrip(self, upf_instance):
+        """Test that ``read -> to_str -> from_str`` yields an equal :class:`UPFDict`."""
+        if upf_instance.version < Version("2.0.0"):
+            with pytest.raises(NotImplementedError):
+                upf_instance.to_str()
+            return
+        text = upf_instance.to_str()
+        assert text.startswith("<UPF")
+        reparsed = UPFDict.from_str(text)
+        assert upf_instance == reparsed
+
+    def test_to_upf_writes_file(self, upf_instance, tmp_path):
+        """``to_upf`` writes a file that re-parses to an equal :class:`UPFDict`."""
+        if upf_instance.version < Version("2.0.0"):
+            pytest.skip("v1 writing not yet implemented")
+        out = upf_instance.to_upf(tmp_path / "out.upf")
+        assert out.is_file()
+        reparsed = UPFDict.from_upf(out)
+        assert upf_instance == reparsed

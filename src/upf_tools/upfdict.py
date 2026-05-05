@@ -12,7 +12,7 @@ from packaging.version import Version
 
 from .utils import get_version_number
 from .v1 import upfv1contents_to_dict
-from .v2 import upfv2contents_to_dict
+from .v2 import dict_to_upfv2, upfv2contents_to_dict
 
 
 class UPFDict(OrderedDict):
@@ -116,6 +116,32 @@ class UPFDict(OrderedDict):
         psp.filename = filename
 
         return psp
+
+    def to_str(self) -> str:
+        """Serialise this :class:`UPFDict` back to UPF text.
+
+        Currently only UPF v2 (the modern XML format) is supported on
+        write. Reading is unaffected; v1 files can still be loaded but
+        not written back out.
+
+        :raises NotImplementedError: if :attr:`version` is below 2.0.
+        :returns: the UPF file contents as a string
+        """
+        if self.version < Version("2.0.0"):
+            raise NotImplementedError(
+                "Writing UPF v1 is not yet supported; only v2 (XML) is implemented."
+            )
+        return dict_to_upfv2(self, version=str(self.version))
+
+    def to_upf(self, filename: Union[Path, str]) -> Path:
+        """Write this :class:`UPFDict` to ``filename`` in UPF v2 format.
+
+        :param filename: destination path
+        :returns: the :class:`Path` written to
+        """
+        path = Path(filename) if not isinstance(filename, Path) else filename
+        path.write_text(self.to_str(), encoding="utf-8")
+        return path
 
     def to_dat(self) -> str:
         """Generate a ``.dat`` file from a :class:`UPFDict` object.
