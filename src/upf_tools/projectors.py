@@ -8,6 +8,8 @@ from typing import Generic, TypeVar
 import matplotlib.pyplot as plt
 import numpy as np
 
+__all__ = ["Projector", "Projectors"]
+
 ProjType = TypeVar("ProjType", bound="Projector")
 
 

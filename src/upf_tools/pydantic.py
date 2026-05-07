@@ -13,6 +13,8 @@ from .utils import get_version_number
 from .v1 import upfv1contents_to_dict
 from .v2 import upfv2contents_to_dict
 
+__all__ = ["UPFModel"]
+
 
 class UPFModel(BaseModel):
     """Minimal Pydantic model for a UPF pseudopotential file.

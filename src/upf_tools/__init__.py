@@ -2,4 +2,6 @@
 
 """Tools for handling .upf (Unified UPFDict Format) files."""
 
-from .upfdict import UPFDict  # noqa: F401
+from .upfdict import UPFDict
+
+__all__ = ["UPFDict"]

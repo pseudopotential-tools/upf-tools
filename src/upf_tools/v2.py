@@ -11,6 +11,8 @@ from defusedxml.ElementTree import fromstring as defused_fromstring
 
 from upf_tools.utils import sanitise
 
+__all__ = ["dict_to_upfv2", "upfv2contents_to_dict"]
+
 # Attributes that ``block_to_dict`` strips on read but that need to be
 # reconstructed on write. The convention used by Quantum ESPRESSO is to
 # always emit them for numeric arrays.

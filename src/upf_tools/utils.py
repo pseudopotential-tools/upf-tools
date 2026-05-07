@@ -7,6 +7,8 @@ from typing import Any
 
 from packaging.version import Version
 
+__all__ = ["get_version_number", "sanitise"]
+
 REGEX_UPF_VERSION = re.compile(
     r"""
     \s*<UPF\s+version\s*="
