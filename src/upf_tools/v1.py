@@ -5,6 +5,8 @@ from typing import Any, Dict, List
 import numpy as np
 from numpy.typing import NDArray
 
+__all__ = ["upfv1contents_to_dict"]
+
 
 def extract_block(tag, lines: List[str]) -> List[str]:
     """Extract an block starting <tag> and ending </tag> from lines of text."""

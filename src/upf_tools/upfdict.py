@@ -14,6 +14,8 @@ from .utils import get_version_number
 from .v1 import upfv1contents_to_dict
 from .v2 import dict_to_upfv2, upfv2contents_to_dict
 
+__all__ = ["UPFDict"]
+
 
 class UPFDict(OrderedDict):
     """Class that contains all of the information of a UPF pseudopotential file.
